@@ -107,7 +107,7 @@ void decoding(Packet packet){
     string hash = packet.hash();
     vector<unsigned char> data = packet.data();
     string message_id = packet.msg_id();
-
+    
     // If packet is ack
     if (packet.type() == "A"){
         ack_controller.process_ack(seq_num);

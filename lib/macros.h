@@ -30,7 +30,7 @@
     // SIZE of packet
     #define SIZE 1024
     // Timeout in seconds
-    #define SEC_TIMEOUT 3
+    #define SEC_TIMEOUT 2
     // CACHE_SIZE of packets
     #define ERROR(s) {perror(s); exit(1);}
     

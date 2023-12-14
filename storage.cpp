@@ -249,7 +249,7 @@ void keep_alive(){
     // Send first message to identify this storage in main server
     sendto(keep_aliveFD, data.data(), data.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
     while(true){
-        num = recvfrom(keep_aliveFD, data.data(), data.size(), MSG_WAITALL, (struct sockaddr *)&keep_alive_addr, (socklen_t *)sizeof(keep_alive_addr));
+        num = recvfrom(keep_aliveFD, data.data(), data.size(), MSG_WAITALL, (struct sockaddr *)&keep_alive_addr, (socklen_t *)&addr_len);
         data = to_string(storage_idx);
         sendto(keep_aliveFD, data.data(), data.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
     }

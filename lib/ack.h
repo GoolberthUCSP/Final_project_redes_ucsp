@@ -35,7 +35,7 @@ void ACK_controller::process_ack(string seq_num){
 void ACK_controller::replay_ack(string seq_num){
     Packet packet;
     string header = seq_num + "000000" + "A" + "000" + "0" + nick_size + nickname;
-    memcpy(&packet, header.data(), sizeof(Packet));
+    packet.set_header(header);
     sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
 }
 

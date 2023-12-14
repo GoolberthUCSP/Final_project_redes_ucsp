@@ -44,11 +44,11 @@ public:
     void set_nickname(string nick){ 
         if (nick.size() > 9) runtime_error("Nickname too long: " + nick);
         copy(nick.begin(), nick.end(), nickname_value);
-        nickname_size = nick.size() + '0';
+        nickname_size = to_string(nick.size())[0];
     }
     void set_data(vector<unsigned char> data){ copy(data.begin(), data.end(), data_value); }
     void set_data(string data){ copy(data.begin(), data.end(), data_value); }
-    void set_header(string header){ copy(header.begin(), header.end(), (char *)this); }
+    void set_header(string header){ copy(header.begin(), header.end(), seq_number); }
 
     void clear(){ memset(this, '-', PACKET_SIZE); }
     void print(){
@@ -59,7 +59,7 @@ public:
         cout << "flag: " << flag() << endl;
         cout << "nick_size: " << nick_size() << endl;
         cout << "nick: " << nickname() << endl;
-        cout << "data: " << data().data() << endl;
+        //cout << "data: " << data_str() << endl;
     }
 
     void operator = (const Packet& packet){ memcpy(this, &packet, PACKET_SIZE); }

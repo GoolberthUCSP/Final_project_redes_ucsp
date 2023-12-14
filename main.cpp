@@ -46,7 +46,7 @@ int main(){
     client_addr.sin_port = htons(5000);
     if (inet_pton(AF_INET, THIS_IP.c_str(), &client_addr.sin_addr) == -1)                ERROR("inet_pton")
     if (bind(clientFD,(struct sockaddr *)&client_addr, sizeof(struct sockaddr)) == -1)   ERROR("Bind")
-    if (setsockopt(clientFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0) ERROR("setsockopt")
+    //if (setsockopt(clientFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0) ERROR("setsockopt")
 
     // configure keep-alive socket
     keep_alive_addr.sin_family = AF_INET;
@@ -62,7 +62,7 @@ int main(){
         storage_addr[i].sin_port = htons(storage_port[i]);
         if (inet_pton(AF_INET, THIS_IP.c_str(), &storage_addr[i].sin_addr) == -1)                   ERROR("inet_pton")
         if (bind(storageFD[i],(struct sockaddr *)&storage_addr[i], sizeof(struct sockaddr)) == -1)  ERROR("Bind")
-        if (setsockopt(storageFD[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0)    ERROR("setsockopt")
+        //if (setsockopt(storageFD[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0)    ERROR("setsockopt")
     }
 
     thread(keep_alive).detach();
@@ -70,11 +70,7 @@ int main(){
         recv_packet.clear();
         int bytes_readed = recvfrom(clientFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
         if (bytes_readed == -1){
-            // Timeout ?????????????????
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-                continue;
-            else
-                perror("recvfrom");
+            perror("recvfrom");
         }
         else{
             // Received on time
@@ -84,8 +80,8 @@ int main(){
 }
 
 void processing_client(struct sockaddr_in client, Packet packet){
-    
-    string seq_num = packet.type();
+
+    string seq_num = packet.seq_num();
     string hash = packet.hash();
     string nickname = packet.nickname();
     
@@ -126,20 +122,22 @@ void answer_query(struct sockaddr_in client, Packet packet){
         // Send notification to the client
         Packet notify;
         int next_key = (key + 1) % 4;
+        
         if (is_alive[next_key]){
             send_packet(storageFD[next_key], storage_addr[next_key], packet);
             send_notification(clientFD, client, "The main storage server is not available, querying next storage server");
         }
         // If no one is alive, send notification to the client
         else
-            send_notification(clientFD, client, "The storages servers are not available");
+            send_notification(clientFD, client, "The storage servers are not available");
     }
 }
 
 void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet){
     // Save packet into Cache if it's necesary to resend
-    ack_controllers[packet.nickname()].insert_packet(stoi(packet.seq_num()), packet);
+    ack_controllers[packet.nickname()].insert_packet(seq_number, packet);
 
+    packet.set_seq_num(format_int(seq_number, 2));
     sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
     
     seq_number = (seq_number + 1) % 100; // Increment sequence number
@@ -148,7 +146,8 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet){
 
 void send_notification(int destinyFD, struct sockaddr_in destiny_addr, string data){
     Packet packet;
-    packet.set_data(data);
+    string data_size = format_int(data.size(), 2);
+    packet.set_data(data_size + data);
     string hash = calc_hash(packet.data());
     string header = format_int(seq_number, 2) + hash + "N" + format_int(msg_id, 3) + "0" + "4" + "MAIN";
     packet.set_header(header);
@@ -166,7 +165,7 @@ void keep_alive(){
             
             gettimeofday(&start, NULL);
             // Storage answers sending its index
-            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_addr[i], (socklen_t *)&addr_len);
+            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_conn, (socklen_t *)&addr_len);
             if (num == -1){
                 // Timeout
                 if (errno == EAGAIN || errno == EWOULDBLOCK){
@@ -179,10 +178,13 @@ void keep_alive(){
             else{
                 // Received on time
                 gettimeofday(&end, NULL);
+                // Identify the storage
+                int storage_idx = stoi(msg);
                 // Compute elapsed time
                 timersub(&end, &start, &elapsed);
                 int uremaining = (tv.tv_sec - elapsed.tv_sec) * 1000000 + (tv.tv_usec - elapsed.tv_usec);
-                is_alive[i] = true;
+                is_alive[storage_idx] = true;
+                storage_addr[storage_idx] = storage_conn;
                 // Sleep for remaining time
                 if (uremaining > 0)
                     usleep(uremaining);
