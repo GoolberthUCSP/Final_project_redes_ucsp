@@ -68,7 +68,7 @@ int main(){
     thread(keep_alive).detach();
     while(true){
         recv_packet.clear();
-        int bytes_readed = recvfrom(clientFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&client_addr, (socklen_t *)addr_len);
+        int bytes_readed = recvfrom(clientFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
         if (bytes_readed == -1){
             // Timeout ?????????????????
             if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -140,7 +140,7 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet){
     // Save packet into Cache if it's necesary to resend
     ack_controllers[packet.nickname()].insert_packet(stoi(packet.seq_num()), packet);
 
-    sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr_in));
+    sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
     
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id: FROM STORAGE DON'T CHANGE THE MSG_ID OF THE PACKET;
@@ -166,7 +166,7 @@ void keep_alive(){
             
             gettimeofday(&start, NULL);
             // Storage answers sending its index
-            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_addr[i], (socklen_t *)addr_len);
+            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_addr[i], (socklen_t *)&addr_len);
             if (num == -1){
                 // Timeout
                 if (errno == EAGAIN || errno == EWOULDBLOCK){

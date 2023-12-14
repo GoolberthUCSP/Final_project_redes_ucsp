@@ -9,6 +9,7 @@ string MAIN_IP = "127.0.0.1";
 int seq_number = 0;
 int msg_id = 0;
 int storage_idx;
+int addr_len= sizeof(struct sockaddr_in);
 
 ACK_controller ack_controller;
 map<string, set<string>> database; // database["node"]: {nodes that are connected to "node"}
@@ -20,7 +21,7 @@ void read_request(vector<unsigned char> data);
 void update_request(vector<unsigned char> data);
 void delete_request(vector<unsigned char> data);
 
-void processing(vector<unsigned char> buffer);
+void processing(Packet packet);
 void send_message(string type, string data);
 void send_packet(string type, string data, string flag); // flag (0=last packet, 1=not last packet)
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]){
     ack_controller = ACK_controller(to_string(storage_idx), mainFD, main_addr);
 
     int bytes_readed;
-    vector<unsigned char> recv_buffer(SIZE);
+    Packet recv_packet;
 
     if ((mainFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1){
         perror("Storage: socket");
@@ -68,48 +69,35 @@ int main(int argc, char *argv[]){
 	cout << "UDPServer connected to main server on port " << port << "..." << endl;
     
     while(true){
-        memset(recv_buffer.data(), 0, SIZE);
-        bytes_readed = recvfrom(mainFD, recv_buffer.data(), SIZE, MSG_WAITALL, (struct sockaddr *)&main_addr, (socklen_t *)sizeof(struct sockaddr_in));
+        recv_packet.clear();
+        bytes_readed = recvfrom(mainFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&main_addr, (socklen_t *)&addr_len);
         cout << "Received " << bytes_readed << " bytes" << endl;
-        thread(processing, recv_buffer).detach();
+        thread(processing, recv_packet).detach();
     }
 }
 
 
-void processing(vector<unsigned char> buffer){
-    stringstream ss;
-    ss.write((char *)buffer.data(), buffer.size());
-    // ss : seq_num|hash|type|msg_id|flag|nick_size|nickname|<data>
-    string seq_num(2, 0), hash(6, 0), type(1, 0), msg_id(3, 0), flag(1, 0), nick_size(2, 0);
-    ss.read(seq_num.data(), seq_num.size());
-    ss.read(hash.data(), hash.size());
-    ss.read(type.data(), type.size());
-    ss.read(msg_id.data(), msg_id.size());
-    ss.read(flag.data(), flag.size());
+void processing(Packet packet){
+    string seq_num = packet.seq_num();
+    string hash = packet.hash();
+    vector<unsigned char> data = packet.data();
 
-    ss.read(nick_size.data(), nick_size.size());
-    string nickname(stoi(nick_size), 0);
-    ss.read(nickname.data(), nickname.size());
-    // Reading data
-    vector<unsigned char> data(buffer.size() - ss.tellg());
-    ss.read((char *)data.data(), data.size());
-    
     // If packet is ACK
-    if (type == "A"){
+    if (packet.type() == "A"){
         ack_controller.process_ack(seq_num);
         return;
     }
     
 // If packet is not corrupted send one ACK, else send one more ACK 
     // Calc hash only to data, without header
-    bool is_good= (hash == calc_hash(data))? true : false; 
+    bool is_good= (hash == calc_hash(packet.data()))? true : false; 
     ack_controller.replay_ack(seq_num);
     // If packet is corrupted, send second ACK
     if (!is_good) 
         ack_controller.replay_ack(seq_num);
     // If packet is good, process it
     else
-        thread(crud_requests[type[0]], data).detach();
+        thread(crud_requests[packet.type()[0]], data).detach();
 }
 
 void send_message(string type, string data){
