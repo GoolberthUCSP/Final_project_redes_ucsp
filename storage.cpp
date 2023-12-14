@@ -23,7 +23,7 @@ void delete_request(vector<unsigned char> data);
 
 void processing(Packet packet);
 void send_message(string type, string data);
-void send_packet(string type, string data, string flag); // flag (0=last packet, 1=not last packet)
+void send_packet(Packet packet); // flag (0=last packet, 1=not last packet)
 
 void keep_alive();
 string get_relations(string node);
@@ -101,8 +101,14 @@ void processing(Packet packet){
 }
 
 void send_message(string type, string data){
-    int packet_data_size = SIZE - 16; // seq_num=2|hash=6|type=1|msg_id=3|flag=1|nick_size=2|nickname=storage_idx=1
+    Packet packet;
+    packet.set_type(type);
+    packet.set_msg_id(format_int(msg_id, 3));
+    packet.set_nickname(to_string(storage_idx));
+
+    int packet_data_size = packet.data_size();
     int remaining_size = data.size();
+
     stringstream ss;
     ss.write((char *)data.data(), data.size());
     string fragment(packet_data_size, 0);
@@ -111,28 +117,27 @@ void send_message(string type, string data){
         // Send full packets
         ss.read(fragment.data(), packet_data_size);
         remaining_size -= packet_data_size;
-        send_packet(type, fragment, "1");
+        packet.set_data(fragment);
+        packet.set_flag("1");
+        send_packet(packet);
     }
     // Send last packet
     fragment.resize(remaining_size);
     ss.read(fragment.data(), remaining_size);
-    send_packet(type, fragment, "0");
+    packet.set_data(fragment);
+    packet.set_flag("1");
+    send_packet(packet);
     msg_id = (msg_id + 1) % 1000; // Increment message id
 }
 
-void send_packet(string type, string data, string flag){
-    // seq_num=2|hash=6|type=1|msg_id=3|flag=1|nick_size=2|nickname=storage_idx=1
-    ostringstream seq_num_os, msg_id_os;
-    seq_num_os << setfill('0') << setw(2) << seq_number;
-    msg_id_os << setfill('0') << setw(3) << msg_id;
-    string header = seq_num_os.str() + calc_hash(data) + type + msg_id_os.str() + flag + "01" + to_string(storage_idx);
+void send_packet(Packet packet){
+
+    packet.set_seq_num(format_int(seq_number, 2));
+    packet.set_hash(calc_hash(packet.data()));
     
-    vector<unsigned char> packet(SIZE, '-');
-    copy(header.begin(), header.end(), packet.begin());
-    copy(data.begin(), data.end(), packet.begin() + 16);
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_number, packet);
-    sendto(mainFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&main_addr, sizeof(struct sockaddr));
+    sendto(mainFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&main_addr, sizeof(struct sockaddr));
     seq_number = (seq_number + 1) % 100; // Increment sequence number
 }
 

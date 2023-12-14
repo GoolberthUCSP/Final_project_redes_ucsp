@@ -14,9 +14,10 @@ int seq_number = 0;
 int msg_id = 0;
 string nickname;
 string nick_size;
+int addr_len= sizeof(struct sockaddr_in);
 
 void encoding(string buffer);
-void decoding(vector<unsigned char> buffer);
+void decoding(Packet packet);
 void thread_receiver();
 
 // CRUD request functions
@@ -31,7 +32,7 @@ void read_response(vector<unsigned char> data);
 void recv_notification(vector<unsigned char> data);
 
 // Other functions
-void send_packet(string type, string data);
+void send_packet(Packet packet);
 
 typedef void (*req_ptr)(stringstream&);
 typedef void (*recv_ptr)(vector<unsigned char>);
@@ -50,7 +51,6 @@ map<char, recv_ptr> response_functions({
 });
 
 int main(){
-    int addr_len= sizeof(struct sockaddr_in);
     if ((serverFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)  ERROR("Socket")
 
     memset(&server_addr, 0, sizeof(server_addr));
@@ -61,8 +61,10 @@ int main(){
     cout << "Input your nickname: ";
     getline(cin, nickname);
     cin.clear();
+    if (nickname.size() > 9) 
+        nickname.resize(9);
     ostringstream oss;
-    oss << setw(2) << setfill('0') << nickname.size();
+    oss << setw(1) << setfill('0') << nickname.size();
     nick_size = oss.str();
 
     ack_controller = ACK_controller(nickname, serverFD, server_addr);
@@ -90,35 +92,24 @@ int main(){
 }
 
 void thread_receiver(){
-    vector<unsigned char> recv_buffer(SIZE);
-    int bytes_readed, addr_len= sizeof(struct sockaddr_in);
+    Packet recv_packet;
+    int bytes_readed;
     while(true){
-        memset(recv_buffer.data(), 0, SIZE);
-        bytes_readed = recvfrom(serverFD, recv_buffer.data(), SIZE, 0, (struct sockaddr *)&server_addr, (socklen_t *)&addr_len);
-        thread(decoding, recv_buffer).detach();
+        recv_packet.clear();
+        bytes_readed = recvfrom(serverFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&server_addr, (socklen_t *)&addr_len);
+        thread(decoding, recv_packet).detach();
     }   
 }
 
-void decoding(vector<unsigned char> buffer){
-    stringstream ss;
-    ss.write((char *)buffer.data(), buffer.size());
+void decoding(Packet packet){
     
-    // ss : seq_num=2|hash=6|type=1|msg_id=3|flag=1|nick_size=2|nickname=<nick_size>|<data>
-    string seq_num(2, 0), hash(6, 0), type(1, 0), msg_id(3, 0), flag(1, 0), nick_size(2, 0);
-    ss.read(seq_num.data(), seq_num.size());
-    ss.read(hash.data(), hash.size());
-    ss.read(type.data(), type.size());
-    ss.read(msg_id.data(), msg_id.size());
-    ss.read(flag.data(), flag.size());
-    ss.read(nick_size.data(), nick_size.size());
-    string nickname(stoi(nick_size), 0);
-    ss.read(nickname.data(), nickname.size());
-    // Reading data
-    vector<unsigned char> data(buffer.size() - ss.tellg());
-    ss.read((char *)data.data(), data.size());
-    
+    string seq_num = packet.seq_num();
+    string hash = packet.hash();
+    vector<unsigned char> data = packet.data();
+    string message_id = packet.msg_id();
+
     // If packet is ack
-    if (type == "A"){
+    if (packet.type() == "A"){
         ack_controller.process_ack(seq_num);
         return;
     }
@@ -132,13 +123,13 @@ void decoding(vector<unsigned char> buffer){
         ack_controller.replay_ack(seq_num);
     // If packet is not corrupted and it´s a CRUD request
     else{
-        copy(data.begin(), data.end(), back_inserter(incomplete_message[msg_id]));
+        copy(data.begin(), data.end(), back_inserter(incomplete_message[message_id]));
         
         // Verify if flag = 1 (incomplete) else (complete)
-        if (flag == "0"){
-            vector<unsigned char> message = incomplete_message[msg_id];
-            incomplete_message.erase(msg_id);
-            thread(response_functions[type[0]], message).detach();
+        if (packet.flag() == "0"){
+            vector<unsigned char> message = incomplete_message[message_id];
+            incomplete_message.erase(message_id);
+            thread(response_functions[packet.type()[0]], message).detach();
         }
     }
 }
@@ -161,61 +152,81 @@ void encoding(string buffer){
 // CRUD request functions
 void create_request(stringstream &ss){
     // ss : node1 node2
+    Packet packet;
+    packet.set_type("C");
+
     string node1, node2;
     getline(ss, node1, ' ');
     getline(ss, node2, '\0');
-    ostringstream size1, size2;
-    size1 << setw(2) << setfill('0') << node1.size();
-    size2 << setw(2) << setfill('0') << node2.size();
-    string out_str = size1.str() + node1 + size2.str() + node2;
-    send_packet("C", out_str);
+    string size1 = format_int(node1.size(), 2);
+    string size2 = format_int(node2.size(), 2);
+    string data = size1 + node1 + size2 + node2;
+    
+    packet.set_data(data);
+    send_packet(packet);
 }
 
 void read_request(stringstream &ss){
     // ss : node
+    Packet packet;
+    packet.set_type("R");
+
     string node;
     getline(ss, node, '\0');
-    ostringstream size;
-    size << setw(2) << setfill('0') << node.size();
-    string out_str = size.str() + node + "1"; // Depth = 1
-    send_packet("R", out_str);
+    string size = format_int(node.size(), 2);
+    string data = size + node + "1"; // Depth = 1
+    
+    packet.set_data(data);
+    send_packet(packet);
 }
 
 void rread_request(stringstream &ss){
     // ss : depth node
+    Packet packet;
+    packet.set_type("R");
+    
     string depth, node;
     getline(ss, depth, ' ');
     getline(ss, node, '\0');
-    ostringstream size;
-    size << setw(2) << setfill('0') << node.size();
-    string out_str = size.str() + node + depth;
-    send_packet("R", out_str);
+    string size = format_int(node.size(), 2);
+    string data = size + node + depth;
+    
+    packet.set_data(data);
+    send_packet(packet);
 }
 
 void update_request(stringstream &ss){
     // ss : node1 node2 new2
+    Packet packet;
+    packet.set_type("U");
+
     string node1, node2, new2;
     getline(ss, node1, ' ');
     getline(ss, node2, ' ');
     getline(ss, new2, '\0');
-    ostringstream size1, size2, size3;
-    size1 << setw(2) << setfill('0') << node1.size();
-    size2 << setw(2) << setfill('0') << node2.size();
-    size3 << setw(2) << setfill('0') << new2.size();
-    string out_str = size1.str() + node1 + size2.str() + node2 + size3.str() + new2;
-    send_packet("U", out_str);
+    string size1 = format_int(node1.size(), 2);
+    string size2 = format_int(node2.size(), 2);
+    string size3 = format_int(new2.size(), 2);
+    string data = size1 + node1 + size2 + node2 + size3 + new2;
+    
+    packet.set_data(data);
+    send_packet(packet);
 }
 
 void delete_request(stringstream &ss){
     // ss : node1 node2
+    Packet packet;
+    packet.set_type("D");
+
     string node1, node2;
     getline(ss, node1, ' ');
     getline(ss, node2, '\0');
-    ostringstream size1, size2;
-    size1 << setw(2) << setfill('0') << node1.size();
-    size2 << setw(2) << setfill('0') << node2.size();
-    string out_str = size1.str() + node1 + size2.str() + node2;
-    send_packet("D", out_str);
+    string size1 = format_int(node1.size(), 2);
+    string size2 = format_int(node2.size(), 2);
+    string data = size1 + node1 + size2 + node2;
+    
+    packet.set_data(data);
+    send_packet(packet);
 }
 
 // Receive functions
@@ -244,18 +255,17 @@ void recv_notification(stringstream &ss){
     cout << "Notification received: " << notification << endl;
 }
 
-void send_packet(string type, string data){
-    // packet: seq_num=2|hash=6|type=1|msg_id=3|flag=1|nick_size=2|nickname=<nick_size>|<data>
-    string seq_number_str = format_int(seq_number, 2);
-    string msg_id_str = format_int(msg_id, 3);
-    vector<unsigned char> packet(SIZE, '-');
-    string hash = calc_hash(data);
-    string header = seq_number_str + hash + type + msg_id_str + "0" + nick_size + nickname;
-    copy(header.begin(), header.end(), packet.begin());
-    copy(data.begin(), data.end(), packet.begin() + header.size());
+void send_packet(Packet packet){
+    packet.set_seq_num(format_int(seq_number, 2));
+    packet.set_msg_id(format_int(msg_id, 3));
+    packet.set_hash(calc_hash(packet.data()));
+    packet.set_flag("0");
+    packet.set_nickname(nickname);
+
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_number, packet);
-    sendto(serverFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
+    sendto(serverFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
+    
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id
 }

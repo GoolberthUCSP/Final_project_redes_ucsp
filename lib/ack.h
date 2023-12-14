@@ -41,6 +41,7 @@ void ACK_controller::replay_ack(string seq_num){
 
 void ACK_controller::resend_packet(string seq_num){
     Packet packet = packets.get(stoi(seq_num));
+    packets.insert(stoi(seq_num), packet);
     sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
 }
 

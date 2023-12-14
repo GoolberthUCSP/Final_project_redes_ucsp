@@ -33,6 +33,7 @@ public:
     vector<unsigned char> data(){ return vector<unsigned char>(data_value, data_value + PACKET_SIZE - 23); }
     string data_str(){ return string(data_value, PACKET_SIZE - 23); }
     string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nickname(); }
+    int data_size(){ return PACKET_SIZE - 23; }
 
     // Setters
     void set_seq_num(string seq_num){ copy(seq_num.begin(), seq_num.end(), seq_number); }
@@ -47,7 +48,7 @@ public:
     }
     void set_data(vector<unsigned char> data){ copy(data.begin(), data.end(), data_value); }
     void set_data(string data){ copy(data.begin(), data.end(), data_value); }
-    void set_header(string header){ copy(header.begin(), header.end(), this); }
+    void set_header(string header){ copy(header.begin(), header.end(), (char *)this); }
 
     void clear(){ memset(this, '-', PACKET_SIZE); }
     void print(){
@@ -60,6 +61,8 @@ public:
         cout << "nick: " << nickname() << endl;
         cout << "data: " << data().data() << endl;
     }
+
+    void operator = (const Packet& packet){ memcpy(this, &packet, PACKET_SIZE); }
 };
 
 #endif

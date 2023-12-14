@@ -6,6 +6,7 @@
 #include <list>
 #include <utility>
 #include <vector>
+#include "packet.h"
 const int DEFAULT_SIZE = 100000; //Tamaño de la caché por defecto
 
 using namespace std;
@@ -45,9 +46,8 @@ struct Cache{
     Packet get(int key)
     {
         //Si el elemento no está en la caché, devolver NULL
-        if (cache_map.find(key) == cache_map.end())
-        {
-            return {};
+        if (cache_map.find(key) == cache_map.end()){
+            return Packet();
         }
             
         //Si el elemento está en la caché, devolver su valor
