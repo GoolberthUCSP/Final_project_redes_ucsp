@@ -35,6 +35,9 @@ int main(){
     
     if ((clientFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)     ERROR("Socket")
     if ((keep_aliveFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1) ERROR("Socket")
+    for (int i= 0; i < 4; i++){
+        if ((storageFD[i] = socket(AF_INET, SOCK_DGRAM, 0)) == -1) ERROR("Socket")
+    }
     
     // configure client's socket
     client_addr.sin_family = AF_INET;
@@ -80,6 +83,9 @@ int main(){
 
 void processing_client(struct sockaddr_in client, vector<unsigned char> buffer){
     // ss : packet: seq_num=2|hash=6|type=1|msg_id=3|flag=1|nick_size=2|nickname=<nick_size>|<data>
+    Packet packet;
+    memcpy(&packet, buffer.data(), sizeof(Packet));
+    
     string seq_num(2, 0), hash(6, 0), type(1, 0), msg_id(3, 0), flag(1, 0), nick_size(2, 0);
     stringstream ss;
     ss.write((char *)buffer.data(), buffer.size());
@@ -160,7 +166,7 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, string type, st
 
     // Save packet into Cache if it's necesary to resend
     //ack_controller.insert_packet(seq_number, packet);
-    
+
     sendto(destinyFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr_in));
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id: FROM STORAGE DON'T CHANGE THE MSG_ID OF THE PACKET;

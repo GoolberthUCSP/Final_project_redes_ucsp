@@ -26,6 +26,7 @@
     #include <mutex>
     #include "cache.h"
     #include "util.h"
+    #include "packet.h"
     // SIZE of packet
     #define SIZE 1024
     // Timeout in seconds
