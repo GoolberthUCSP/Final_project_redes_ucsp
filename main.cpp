@@ -140,11 +140,11 @@ void answer_query(struct sockaddr_in client, vector<unsigned char> buffer){
         int next_key = (key + 1) % 4;
         if (is_alive[next_key]){
             send_packet(storageFD[next_key], storage_addr[next_key], type, flag, data);
-            send_packet(clientFD, client, "N", "0", "The main storage server is not available, ");
+            send_packet(clientFD, client, "N", "0", "The main storage server is not available");
         }
         // If no one is alive, send notification to the client
         else
-            send_packet(clientFD, client, "N", "0", "The storages servers are not available");
+            send_packet(clientFD, client, "N", "0", "The storage servers are not available");
     }
 }
 
