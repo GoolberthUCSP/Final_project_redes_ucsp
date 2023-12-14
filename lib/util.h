@@ -9,6 +9,11 @@
 
 using namespace std;
 
+/*
+    Calculate hash of packet: checksum
+    @param packet : packet
+    @return string in format "000000"
+*/
 string calc_hash(vector<unsigned char> packet){
     int sum = 0;
     ostringstream output;
@@ -19,6 +24,11 @@ string calc_hash(vector<unsigned char> packet){
     return output.str();
 }
 
+/*
+    Calculate hash of packet: checksum
+    @param packet : packet
+    @return string in format "000000"
+*/
 string calc_hash(string packet){
     int sum = 0;
     ostringstream output;

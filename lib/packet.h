@@ -5,7 +5,7 @@
 #define PACKET_SIZE 1024
 
 #include <iostream>
-#include <string>
+#include <cstring>
 #include <vector>
 
 using namespace std;
@@ -30,6 +30,9 @@ public:
     string nick_size(){ return string(&nickname_size, 1); }
     string nick(){ return string(nickname_value, nickname_size-'0'); }
     vector<unsigned char> data(){ return vector<unsigned char>(data_value, data_value + PACKET_SIZE - 23); }
+    string data_str(){ return string(data_value, PACKET_SIZE - 23); }
+    string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nick(); }
+
     // Setters
     void set_seq_num(string seq_num){ copy(seq_num.begin(), seq_num.end(), seq_number); }
     void set_hash(string hash){ copy(hash.begin(), hash.end(), hash_value); }
