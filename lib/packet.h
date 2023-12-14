@@ -21,6 +21,7 @@ class Packet{
     char data_value[PACKET_SIZE - 23];
 public:
     Packet(){ memset(this, '-', PACKET_SIZE); }
+    Packet(const Packet &packet){ memcpy(this, &packet, PACKET_SIZE); }
     // Getters
     string seq_num(){ return string(seq_number, 2); }
     string hash(){ return string(hash_value, 6); }
@@ -28,10 +29,10 @@ public:
     string msg_id(){ return string(message_id, 3); }
     string flag(){ return string(&packet_flag, 1); }
     string nick_size(){ return string(&nickname_size, 1); }
-    string nick(){ return string(nickname_value, nickname_size-'0'); }
+    string nickname(){ return string(nickname_value, nickname_size-'0'); }
     vector<unsigned char> data(){ return vector<unsigned char>(data_value, data_value + PACKET_SIZE - 23); }
     string data_str(){ return string(data_value, PACKET_SIZE - 23); }
-    string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nick(); }
+    string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nickname(); }
 
     // Setters
     void set_seq_num(string seq_num){ copy(seq_num.begin(), seq_num.end(), seq_number); }
@@ -39,12 +40,16 @@ public:
     void set_type(string type){ packet_type = type[0]; }
     void set_msg_id(string msg_id){ copy(msg_id.begin(), msg_id.end(), message_id); }
     void set_flag(string flag){ packet_flag = flag[0]; }
-    void set_nick(string nick){ 
+    void set_nickname(string nick){ 
         if (nick.size() > 9) runtime_error("Nickname too long: " + nick);
         copy(nick.begin(), nick.end(), nickname_value);
         nickname_size = nick.size() + '0';
     }
     void set_data(vector<unsigned char> data){ copy(data.begin(), data.end(), data_value); }
+    void set_data(string data){ copy(data.begin(), data.end(), data_value); }
+    void set_header(string header){ copy(header.begin(), header.end(), this); }
+
+    void clear(){ memset(this, '-', PACKET_SIZE); }
     void print(){
         cout << "seq_num: " << seq_num() << endl;
         cout << "hash: " << hash() << endl;
@@ -52,7 +57,7 @@ public:
         cout << "msg_id: " << msg_id() << endl;
         cout << "flag: " << flag() << endl;
         cout << "nick_size: " << nick_size() << endl;
-        cout << "nick: " << nick() << endl;
+        cout << "nick: " << nickname() << endl;
         cout << "data: " << data().data() << endl;
     }
 };

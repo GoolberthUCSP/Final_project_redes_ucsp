@@ -8,6 +8,7 @@ int clientFD, keep_aliveFD;
 struct sockaddr_in client_addr, keep_alive_addr;
 int seq_number = 0;
 int msg_id = 0;
+int addr_len= sizeof(struct sockaddr_in);
 struct timeval tv;
 
 // Storages
@@ -20,12 +21,13 @@ int storage_port[4] = {5001, 5002, 5003, 5004};
 map<string, ACK_controller> ack_controllers;
 
 void keep_alive();
-void processing_client(struct sockaddr_in client, vector<unsigned char> buffer);
-void answer_query(struct sockaddr_in client, vector<unsigned char> buffer);
-void send_packet(int destinyFD, struct sockaddr_in destiny_addr, string type, string flag, string data);
+void processing_client(struct sockaddr_in client, Packet packet);
+void answer_query(struct sockaddr_in client, Packet packet);
+void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet);
+void send_notification(int destinyFD, struct sockaddr_in destiny_addr, string data);
 
 int main(){
-    vector<unsigned char> recv_buffer(SIZE);
+    Packet recv_packet;
     string THIS_IP = "127.0.0.1";
     tv.tv_sec = SEC_TIMEOUT;
     tv.tv_usec = 0;
@@ -65,8 +67,8 @@ int main(){
 
     thread(keep_alive).detach();
     while(true){
-        memset(recv_buffer.data(), 0, SIZE);
-        int bytes_readed = recvfrom(clientFD, recv_buffer.data(), SIZE, MSG_WAITALL, (struct sockaddr *)&client_addr, (socklen_t *)sizeof(struct sockaddr_in));
+        recv_packet.clear();
+        int bytes_readed = recvfrom(clientFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&client_addr, (socklen_t *)addr_len);
         if (bytes_readed == -1){
             // Timeout ?????????????????
             if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -76,30 +78,16 @@ int main(){
         }
         else{
             // Received on time
-            thread(processing_client, client_addr, recv_buffer).detach();
+            thread(processing_client, client_addr, recv_packet).detach();
         }
     }
 }
 
-void processing_client(struct sockaddr_in client, vector<unsigned char> buffer){
-    // ss : packet: seq_num=2|hash=6|type=1|msg_id=3|flag=1|nick_size=2|nickname=<nick_size>|<data>
-    Packet packet;
-    memcpy(&packet, buffer.data(), sizeof(Packet));
+void processing_client(struct sockaddr_in client, Packet packet){
     
-    string seq_num(2, 0), hash(6, 0), type(1, 0), msg_id(3, 0), flag(1, 0), nick_size(2, 0);
-    stringstream ss;
-    ss.write((char *)buffer.data(), buffer.size());
-    ss.read(seq_num.data(), seq_num.size());
-    ss.read(hash.data(), hash.size());
-    ss.read(type.data(), type.size());
-    ss.read(msg_id.data(), msg_id.size());
-    ss.read(flag.data(), flag.size());
-    ss.read(nick_size.data(), nick_size.size());
-    string nickname(stoi(nick_size), 0);
-    ss.read(nickname.data(), nickname.size());
-    // Reading data
-    vector<unsigned char> data(buffer.size() - ss.tellg());
-    ss.read((char *)data.data(), data.size());
+    string seq_num = packet.type();
+    string hash = packet.hash();
+    string nickname = packet.nickname();
     
     // If it´s the first connection from the client
     if (ack_controllers.find(nickname) == ack_controllers.end()){
@@ -107,69 +95,64 @@ void processing_client(struct sockaddr_in client, vector<unsigned char> buffer){
     }
 
     // If packet is ack
-    if (type == "A"){
+    if (packet.type() == "A"){
         ack_controllers[nickname].process_ack(seq_num);
         return;
     }
 
 // If packet is not corrupted send one ACK, else send one more ACK
     // Calc hash only to data, without header
-    bool is_good= (hash == calc_hash(data))? true : false;
+    bool is_good= (hash == calc_hash(packet.data()))? true : false;
     ack_controllers[nickname].replay_ack(seq_num);
     // If packet is corrupted, send one more ACK
     if (!is_good)
         ack_controllers[nickname].replay_ack(seq_num);
     // If packet is not corrupted and it´s a CRUD request
     else
-        answer_query(client, data);
+        answer_query(client, packet);
 }
 
-void answer_query(struct sockaddr_in client, vector<unsigned char> buffer){
-
-    string nick_size(2, 0), type(1, 0), flag(1, 0);
-    copy(nick_size.begin(), nick_size.end(), buffer.begin() + 13);
-    copy(type.begin(), type.end(), buffer.begin() + 8);
-    copy(flag.begin(), flag.end(), buffer.begin() + 12);
-    int header_size = 15 + stoi(nick_size);
-    string data(buffer.begin() + header_size, buffer.end());
-
+void answer_query(struct sockaddr_in client, Packet packet){
+    
     // Key = first character of the first node
-    int key = (data[2] % 4); // every client data begin with: 00node...
+    int key = (packet.data()[2] % 4); // every client data begin with: 00node...
     
     // If storage server is alive, do the query
     if (is_alive[key]){
-        send_packet(storageFD[key], storage_addr[key], type, flag, data);
+        send_packet(storageFD[key], storage_addr[key], packet);
     }
     else{
         // If storage server is not alive, do the query to the next storage server
         // Send notification to the client
+        Packet notify;
         int next_key = (key + 1) % 4;
         if (is_alive[next_key]){
-            send_packet(storageFD[next_key], storage_addr[next_key], type, flag, data);
-            send_packet(clientFD, client, "N", "0", "The main storage server is not available");
+            send_packet(storageFD[next_key], storage_addr[next_key], packet);
+            send_notification(clientFD, client, "The main storage server is not available, querying next storage server");
         }
         // If no one is alive, send notification to the client
         else
-            send_packet(clientFD, client, "N", "0", "The storage servers are not available");
+            send_notification(clientFD, client, "The storages servers are not available");
     }
 }
 
-void send_packet(int destinyFD, struct sockaddr_in destiny_addr, string type, string flag, string data){
-    // seq_num(2, 0), hash(6, 0), type(1, 0), msg_id(3, 0), flag(1, 0), nick_size(2, 0);
-    string hash = calc_hash(data);
-    string seq_num = format_int(seq_number, 2);
-    string msg_id_str = format_int(msg_id, 3);
-    string header = seq_num + hash + type + msg_id_str + flag + "01" + "M";
-    vector<unsigned char> packet(SIZE);
-    copy(header.begin(), header.end(), packet.begin());
-    copy(data.begin(), data.end(), packet.begin() + header.size());
-
+void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet){
     // Save packet into Cache if it's necesary to resend
-    //ack_controller.insert_packet(seq_number, packet);
+    ack_controllers[packet.nickname()].insert_packet(stoi(packet.seq_num()), packet);
 
-    sendto(destinyFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr_in));
+    sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr_in));
+    
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id: FROM STORAGE DON'T CHANGE THE MSG_ID OF THE PACKET;
+}
+
+void send_notification(int destinyFD, struct sockaddr_in destiny_addr, string data){
+    Packet packet;
+    packet.set_data(data);
+    string hash = calc_hash(packet.data());
+    string header = format_int(seq_number, 2) + hash + "N" + format_int(msg_id, 3) + "0" + "4" + "MAIN";
+    packet.set_header(header);
+    send_packet(destinyFD, destiny_addr, packet);
 }
 
 void keep_alive(){
@@ -183,7 +166,7 @@ void keep_alive(){
             
             gettimeofday(&start, NULL);
             // Storage answers sending its index
-            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_addr[i], (socklen_t *)sizeof(struct sockaddr));
+            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_addr[i], (socklen_t *)addr_len);
             if (num == -1){
                 // Timeout
                 if (errno == EAGAIN || errno == EWOULDBLOCK){

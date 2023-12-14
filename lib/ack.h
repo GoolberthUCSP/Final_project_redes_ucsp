@@ -15,14 +15,13 @@ struct ACK_controller{
     ACK_controller() = default;
     ACK_controller(string nickname, int fd, struct sockaddr_in addr) : nickname(nickname), originFD(fd), origin_addr(addr) {
         ostringstream ss;
-        ss << setw(2) << setfill('0') << nickname.size();
-        nick_size = ss.str();
+        nick_size = to_string(nickname.size());
         packets.size = CACHE_SIZE;
     }
     void process_ack(string seq_num);
     void replay_ack(string seq_num);
     void resend_packet(string seq_num);
-    void insert_packet(int seq_num, vector<unsigned char> packet);
+    void insert_packet(int seq_num, Packet packet);
 };
 
 void ACK_controller::process_ack(string seq_num){
@@ -34,18 +33,18 @@ void ACK_controller::process_ack(string seq_num){
 }
 
 void ACK_controller::replay_ack(string seq_num){
-    vector<unsigned char> packet(SIZE, '-');
+    Packet packet;
     string header = seq_num + "000000" + "A" + "000" + "0" + nick_size + nickname;
-    copy(header.begin(), header.end(), packet.begin());
-    sendto(originFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
+    memcpy(&packet, header.data(), sizeof(Packet));
+    sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
 }
 
 void ACK_controller::resend_packet(string seq_num){
-    vector<unsigned char> packet = packets.get(stoi(seq_num));
-    sendto(originFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
+    Packet packet = packets.get(stoi(seq_num));
+    sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
 }
 
-void ACK_controller::insert_packet(int seq_num, vector<unsigned char> packet){
+void ACK_controller::insert_packet(int seq_num, Packet packet){
     packets.insert(seq_num, packet);
 }
 
