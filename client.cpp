@@ -253,7 +253,8 @@ void send_packet(string type, string data){
     string header = seq_number_str + hash + type + msg_id_str + "0" + nick_size + nickname;
     copy(header.begin(), header.end(), packet.begin());
     copy(data.begin(), data.end(), packet.begin() + header.size());
-    packets.insert(seq_number, packet);
+    // Save packet into Cache if it's necesary to resend
+    ack_controller.insert_packet(seq_number, packet);
     sendto(serverFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id

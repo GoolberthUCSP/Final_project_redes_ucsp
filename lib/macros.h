@@ -1,5 +1,5 @@
-#ifndef MACRO_H
-#define MACRO_H
+#ifndef MACROS_H
+#define MACROS_H
     #include <sys/ioctl.h>
     #include <sys/types.h>
     #include <sys/socket.h>
@@ -31,6 +31,7 @@
     // Timeout in seconds
     #define SEC_TIMEOUT 3
     // CACHE_SIZE of packets
-    #define CACHE_SIZE 10
     #define ERROR(s) {perror(s); exit(1);}
+    
+    #define CACHE_SIZE 10
 #endif

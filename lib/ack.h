@@ -9,7 +9,7 @@ struct ACK_controller{
     string nickname, nick_size;
     int originFD;
     struct sockaddr_in origin_addr;
-    Cache packets(CACHE_SIZE);
+    Cache packets;
     set<string> acks_to_recv;
 
     ACK_controller() = default;
@@ -17,10 +17,12 @@ struct ACK_controller{
         ostringstream ss;
         ss << setw(2) << setfill('0') << nickname.size();
         nick_size = ss.str();
+        packets.size = CACHE_SIZE;
     }
     void process_ack(string seq_num);
     void replay_ack(string seq_num);
     void resend_packet(string seq_num);
+    void insert_packet(int seq_num, vector<unsigned char> packet);
 };
 
 void ACK_controller::process_ack(string seq_num){
@@ -41,6 +43,10 @@ void ACK_controller::replay_ack(string seq_num){
 void ACK_controller::resend_packet(string seq_num){
     vector<unsigned char> packet = packets.get(stoi(seq_num));
     sendto(originFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
+}
+
+void ACK_controller::insert_packet(int seq_num, vector<unsigned char> packet){
+    packets.insert(seq_num, packet);
 }
 
 #endif

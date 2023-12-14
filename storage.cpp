@@ -142,6 +142,8 @@ void send_packet(string type, string data, string flag){
     vector<unsigned char> packet(SIZE, '-');
     copy(header.begin(), header.end(), packet.begin());
     copy(data.begin(), data.end(), packet.begin() + 16);
+    // Save packet into Cache if it's necesary to resend
+    ack_controller.insert_packet(seq_number, packet);
     sendto(mainFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&main_addr, sizeof(struct sockaddr));
     seq_number = (seq_number + 1) % 100; // Increment sequence number
 }

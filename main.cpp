@@ -157,6 +157,10 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, string type, st
     vector<unsigned char> packet(SIZE);
     copy(header.begin(), header.end(), packet.begin());
     copy(data.begin(), data.end(), packet.begin() + header.size());
+
+    // Save packet into Cache if it's necesary to resend
+    //ack_controller.insert_packet(seq_number, packet);
+    
     sendto(destinyFD, packet.data(), packet.size(), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr_in));
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id: FROM STORAGE DON'T CHANGE THE MSG_ID OF THE PACKET;

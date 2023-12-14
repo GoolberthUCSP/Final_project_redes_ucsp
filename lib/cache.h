@@ -6,7 +6,7 @@
 #include <list>
 #include <utility>
 #include <vector>
-const int CACHE_SIZE = 100000; //Tamaño de la caché
+const int DEFAULT_SIZE = 100000; //Tamaño de la caché por defecto
 
 using namespace std;
 
@@ -14,7 +14,7 @@ struct Cache{
     int size; //Tamaño de la caché
     list<pair<int, vector<unsigned char>>> cache_list; //Lista de elementos de la caché
     unordered_map<int, list<pair<int, vector<unsigned char>>>::iterator> cache_map; //Mapa de elementos de la caché
-    Cache(int size = CACHE_SIZE)
+    Cache(int size = DEFAULT_SIZE)
     {
         this->size = size;
         cache_list.clear();
