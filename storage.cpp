@@ -48,10 +48,9 @@ int main(int argc, char *argv[]){
     int bytes_readed;
     Packet recv_packet;
 
-    if ((mainFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1){
-        perror("Storage: socket");
-        exit(1);
-    }
+    if ((mainFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)        ERROR("Socket")
+    if ((keep_aliveFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)  ERROR("Socket")
+    
     // Define the main server's address
     memset(&main_addr, 0, sizeof(main_addr));
     main_addr.sin_family = AF_INET;

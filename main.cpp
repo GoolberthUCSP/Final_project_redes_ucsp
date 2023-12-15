@@ -16,6 +16,8 @@ bool is_alive[4]{0}; // all storages start in death state
 struct sockaddr_in storage_addr[4], storage_conn;
 int storageFD[4];
 int storage_port[4] = {5001, 5002, 5003, 5004};
+//Only for receiving read responses from storages
+map<string, vector<unsigned char>> incomplete_message; // msg_id, data
 
 // Each storage and client has a ack_controller
 map<string, ACK_controller> ack_controllers;
@@ -24,6 +26,9 @@ void keep_alive();
 void processing_client(struct sockaddr_in client, Packet packet);
 void answer_query(struct sockaddr_in client, Packet packet);
 void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet, string destiny_nick);
+
+string process_read_query(Packet packet);
+string process_cud_query(int storage_idx, Packet packet);
 
 int main(){
     Packet recv_packet;
@@ -201,4 +206,22 @@ void keep_alive(){
             }
         }
     }    
+}
+
+string process_cud_query(int storage_idx, Packet packet){
+    string storage_nick = to_string(storage_idx);
+    Packet result;
+    send_packet(storageFD[storage_idx], storage_addr[storage_idx], packet, storage_nick);
+    // Do loop while the server answers with its 
+    do{
+        result.clear();
+        recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
+        
+        if (result.type() == "A"){
+            ack_controllers[storage_nick].process_ack(result.seq_num());
+            continue;
+        }
+    
+    } while(result.flag() != "0" && result.type() != "A");
+
 }
