@@ -131,12 +131,16 @@ void send_message(string type, string data){
 }
 
 void send_packet(Packet packet){
+    string seq_num = format_int(seq_number, 2);
 
-    packet.set_seq_num(format_int(seq_number, 2));
+    packet.set_seq_num(seq_num);
     packet.set_hash(calc_hash(packet.data()));
-    
+
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_number, packet);
+    ack_controller.acks_to_recv.insert(seq_num);
+
+
     sendto(mainFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&main_addr, sizeof(struct sockaddr));
     seq_number = (seq_number + 1) % 100; // Increment sequence number
 }

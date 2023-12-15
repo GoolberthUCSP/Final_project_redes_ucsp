@@ -121,7 +121,7 @@ void decoding(Packet packet){
     // If packet is corrupted, send one more ACK
     if (!is_good)
         ack_controller.replay_ack(seq_num);
-    // If packet is not corrupted and it´s a CRUD request
+    // If packet is not corrupted and it´s a CRUD response
     else{
         copy(data.begin(), data.end(), back_inserter(incomplete_message[message_id]));
         
@@ -256,14 +256,17 @@ void recv_notification(stringstream &ss){
 }
 
 void send_packet(Packet packet){
-    packet.set_seq_num(format_int(seq_number, 2));
-    packet.set_msg_id(format_int(msg_id, 3));
+    string seq_num = format_int(seq_number, 2);
+
+    packet.set_seq_num(seq_num);
     packet.set_hash(calc_hash(packet.data()));
-    packet.set_flag("0");
+    packet.set_msg_id(format_int(msg_id, 3));
     packet.set_nickname(nickname);
+    packet.set_flag("0");
 
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_number, packet);
+    ack_controller.acks_to_recv.insert(seq_num);
     sendto(serverFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
     
     seq_number = (seq_number + 1) % 100; // Increment sequence number

@@ -52,13 +52,7 @@ public:
 
     void clear(){ memset(this, '-', PACKET_SIZE); }
     void print(){
-        cout << "seq_num: " << seq_num() << endl;
-        cout << "hash: " << hash() << endl;
-        cout << "type: " << type() << endl;
-        cout << "msg_id: " << msg_id() << endl;
-        cout << "flag: " << flag() << endl;
-        cout << "nick_size: " << nick_size() << endl;
-        cout << "nick: " << nickname() << endl;
+        cout << seq_num() << "|" << hash() << "|" << type() << "|" << msg_id() << "|" << flag() << "|" << nick_size() << "|" << nickname() << endl;
         //cout << "data: " << data_str() << endl;
     }
 

@@ -23,8 +23,7 @@ map<string, ACK_controller> ack_controllers;
 void keep_alive();
 void processing_client(struct sockaddr_in client, Packet packet);
 void answer_query(struct sockaddr_in client, Packet packet);
-void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet);
-void send_notification(int destinyFD, struct sockaddr_in destiny_addr, string data);
+void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet, string destiny_nick);
 
 int main(){
     Packet recv_packet;
@@ -33,11 +32,13 @@ int main(){
     tv.tv_usec = 0;
     
     memset(&client_addr, 0, sizeof(client_addr));
-    memset(&keep_alive_addr, 0, sizeof(keep_alive_addr));
-    
     if ((clientFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)     ERROR("Socket")
+    
+    memset(&keep_alive_addr, 0, sizeof(keep_alive_addr));
     if ((keep_aliveFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1) ERROR("Socket")
+    
     for (int i= 0; i < 4; i++){
+        memset(&storage_addr[i], 0, sizeof(storage_addr[i]));
         if ((storageFD[i] = socket(AF_INET, SOCK_DGRAM, 0)) == -1) ERROR("Socket")
     }
     
@@ -73,7 +74,7 @@ int main(){
             perror("recvfrom");
         }
         else{
-            // Received on time
+            // Received on time (With timeout)
             thread(processing_client, client_addr, recv_packet).detach();
         }
     }
@@ -111,47 +112,56 @@ void processing_client(struct sockaddr_in client, Packet packet){
 void answer_query(struct sockaddr_in client, Packet packet){
     
     // Key = first character of the first node
-    int key = (packet.data()[2] % 4); // every client data begin with: 00node...
-    
+    int key = (packet.data()[2] % 4); // every client data request begin with: 00node...
+    string storage_nick = to_string(key);
+
     // If storage server is alive, do the query
     if (is_alive[key]){
-        send_packet(storageFD[key], storage_addr[key], packet);
+        send_packet(storageFD[key], storage_addr[key], packet, storage_nick);
     }
     else{
         // If storage server is not alive, do the query to the next storage server
         // Send notification to the client
         Packet notify;
+        notify.set_type("N");
+        notify.set_flag("0");
+
         int next_key = (key + 1) % 4;
+        string next_storage_nick = to_string(next_key);
         
         if (is_alive[next_key]){
-            send_packet(storageFD[next_key], storage_addr[next_key], packet);
-            send_notification(clientFD, client, "The main storage server is not available, querying next storage server");
+            send_packet(storageFD[next_key], storage_addr[next_key], packet, storage_nick);
+            string msg = "The storage server " + storage_nick + " is not available";
+            notify.set_data(format_int(msg.size(), 2) + msg);
+            // Send notification to the client
+            send_packet(clientFD, client, notify, packet.nickname());
         }
         // If no one is alive, send notification to the client
-        else
-            send_notification(clientFD, client, "The storage servers are not available");
+        else{
+            string msg = "Storage servers [" + storage_nick + "," + next_storage_nick + "] are not available";
+            notify.set_data(format_int(msg.size(), 2) + msg);
+            // Send notification to the client
+            send_packet(clientFD, client, notify, packet.nickname());
+        }
     }
 }
 
-void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet){
-    // Save packet into Cache if it's necesary to resend
-    ack_controllers[packet.nickname()].insert_packet(seq_number, packet);
-
+void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet, string destiny_nick){
+    
+    // Change header values
     packet.set_seq_num(format_int(seq_number, 2));
+    packet.set_hash(calc_hash(packet.data()));
+    packet.set_msg_id(format_int(msg_id, 3));
+    packet.set_nickname("MAIN");
+
+    // Save packet into Cache if it's necesary to resend
+    ack_controllers[destiny_nick].insert_packet(seq_number, packet);
+    ack_controllers[destiny_nick].acks_to_recv.insert(packet.seq_num());
+
     sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
     
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id: FROM STORAGE DON'T CHANGE THE MSG_ID OF THE PACKET;
-}
-
-void send_notification(int destinyFD, struct sockaddr_in destiny_addr, string data){
-    Packet packet;
-    string data_size = format_int(data.size(), 2);
-    packet.set_data(data_size + data);
-    string hash = calc_hash(packet.data());
-    string header = format_int(seq_number, 2) + hash + "N" + format_int(msg_id, 3) + "0" + "4" + "MAIN";
-    packet.set_header(header);
-    send_packet(destinyFD, destiny_addr, packet);
 }
 
 void keep_alive(){
