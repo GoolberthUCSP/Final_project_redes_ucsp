@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
 
     if ((mainFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)        ERROR("Socket")
     if ((keep_aliveFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)  ERROR("Socket")
-    
+
     // Define the main server's address
     memset(&main_addr, 0, sizeof(main_addr));
     main_addr.sin_family = AF_INET;
@@ -123,8 +123,9 @@ void send_message(string type, string data){
     // Send last packet
     fragment.resize(remaining_size);
     ss.read(fragment.data(), remaining_size);
+    
     packet.set_data(fragment);
-    packet.set_flag("1");
+    packet.set_flag("0");
     send_packet(packet);
     msg_id = (msg_id + 1) % 1000; // Increment message id
 }
@@ -161,11 +162,13 @@ void create_request(vector<unsigned char> data){
     
     if (database[node1].find(node2) != database[node1].end()){
         // Send notification of failure: relation(node1->node2) already exists
+        send_message("N", "The relation " + node1 + " -> " + node2 + " already exists");
         return;
     }
 
     database[node1].insert(node2);
     //Send notification of success
+    send_message("N", "The relation " + node1 + " -> " + node2 + " was created");
 }
 void read_request(vector<unsigned char> data){
     // data : 00node
@@ -179,6 +182,7 @@ void read_request(vector<unsigned char> data){
     
     if (database.find(node) == database.end()){
         // Send notification of failure: node doesn't exist
+        send_message("N", "The node doesn't exist");
         return;
     }
     //Return response to primary server
@@ -186,6 +190,7 @@ void read_request(vector<unsigned char> data){
     ostringstream size_os;
     size_os << setw(3) << setfill('0') << result.size();
     result = size_os.str() + result;
+    // Send response
     send_message("R", result);
 }
 
@@ -209,12 +214,14 @@ void update_request(vector<unsigned char> data){
 
     if (database.find(node1) == database.end()){
         // Send notification of failure: node1 doesn't exist
+        send_message("N", "The node " + node1 + " doesn't exist");
         return;
     }
 
     database[node1].erase(node2);
     database[node1].insert(new2);
     //Send notification of success
+    send_message("N", "The relation " + node1 + " -> " + node2 + " was updated to " + node1 + " -> " + new2);
 }
 
 void delete_request(vector<unsigned char> data){
@@ -233,6 +240,7 @@ void delete_request(vector<unsigned char> data){
     
     if (database.find(node1) == database.end()){
         // Send notification of failure: node1 doesn't exist
+        send_message("N", "The node " + node1 + " doesn't exist");
         return;
     }
 
@@ -243,6 +251,7 @@ void delete_request(vector<unsigned char> data){
         database[node1].erase(node2);
     }
     //Send notification of success
+    send_message("N", "The relation " + node1 + " -> " + node2 + " was deleted");
 }
 
 void keep_alive(){

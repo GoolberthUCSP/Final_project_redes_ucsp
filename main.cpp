@@ -17,7 +17,7 @@ struct sockaddr_in storage_addr[4], storage_conn;
 int storageFD[4];
 int storage_port[4] = {5001, 5002, 5003, 5004};
 //Only for receiving read responses from storages
-map<string, vector<unsigned char>> incomplete_message; // msg_id, data
+vector<map<string, vector<unsigned char>>> incomplete_message(4); // msg_id, data
 
 // Each storage and client has a ack_controller
 map<string, ACK_controller> ack_controllers;
@@ -26,6 +26,7 @@ void keep_alive();
 void processing_client(struct sockaddr_in client, Packet packet);
 void answer_query(struct sockaddr_in client, Packet packet);
 void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet, string destiny_nick);
+void send_message(int destinyFD, struct sockaddr_in destiny_addr, string data, string destiny_nick);
 
 string process_read_query(Packet packet);
 string process_cud_query(int storage_idx, Packet packet);
@@ -34,7 +35,7 @@ int main(){
     Packet recv_packet;
     string THIS_IP = "127.0.0.1";
     tv.tv_sec = SEC_TIMEOUT;
-    tv.tv_usec = 0;
+    tv.tv_usec = USEC_TIMEOUT;
     
     memset(&client_addr, 0, sizeof(client_addr));
     if ((clientFD = socket(AF_INET, SOCK_DGRAM, 0)) == -1)     ERROR("Socket")
@@ -109,7 +110,7 @@ void processing_client(struct sockaddr_in client, Packet packet){
     // If packet is corrupted, send one more ACK
     if (!is_good)
         ack_controllers[nickname].replay_ack(seq_num);
-    // If packet is not corrupted and it´s a CRUD request
+    // If packet is not corrupted -> it´s a CRUD request
     else
         answer_query(client, packet);
 }
@@ -119,27 +120,49 @@ void answer_query(struct sockaddr_in client, Packet packet){
     // Key = first character of the first node
     int key = (packet.data()[2] % 4); // every client data request begin with: 00node...
     string storage_nick = to_string(key);
+    int next_key = (key + 1) % 4;
+    string next_storage_nick = to_string(next_key);
 
-    // If storage server is alive, do the query
+    Packet notify;
+    notify.set_type("N");
+    notify.set_flag("0");
+
+    // If storage server is alive, process the query
     if (is_alive[key]){
-        send_packet(storageFD[key], storage_addr[key], packet, storage_nick);
+        if (packet.type() != "R"){
+            string notification = process_cud_query(key, packet);
+            notify.set_data(notification);
+            // Send notification to the client
+            send_packet(clientFD, client, notify, packet.nickname());
+        }
+        else {
+            string read_message = process_read_query(packet);
+            // Send result of read query to the client
+            send_message(clientFD, client, read_message, packet.nickname());
+        }
     }
     else{
         // If storage server is not alive, do the query to the next storage server
         // Send notification to the client
-        Packet notify;
-        notify.set_type("N");
-        notify.set_flag("0");
-
-        int next_key = (key + 1) % 4;
-        string next_storage_nick = to_string(next_key);
         
         if (is_alive[next_key]){
-            send_packet(storageFD[next_key], storage_addr[next_key], packet, storage_nick);
             string msg = "The storage server " + storage_nick + " is not available";
             notify.set_data(format_int(msg.size(), 2) + msg);
             // Send notification to the client
             send_packet(clientFD, client, notify, packet.nickname());
+
+            // Process query
+            if (packet.type() != "R"){
+                string notification = process_cud_query(next_key, packet);
+                notify.set_data(notification);
+                // Send notification to the client
+                send_packet(clientFD, client, notify, packet.nickname());
+            }
+            else {
+                string read_message = process_read_query(packet);
+                // Send result of read query to the client
+                send_message(clientFD, client, read_message, packet.nickname());
+            }
         }
         // If no one is alive, send notification to the client
         else{
@@ -208,6 +231,12 @@ void keep_alive(){
     }    
 }
 
+/*
+    Process the CUD query
+    @param storage_idx: index of the storage server
+    @param packet: packet to send to the server
+    @return: notification from the storage server
+*/
 string process_cud_query(int storage_idx, Packet packet){
     string storage_nick = to_string(storage_idx);
     Packet result;
@@ -217,11 +246,38 @@ string process_cud_query(int storage_idx, Packet packet){
         result.clear();
         recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
         
+        // If it's the response of the server's first query.
+        if (ack_controllers.find(storage_nick) == ack_controllers.end()){
+            ack_controllers[storage_nick] = ACK_controller(storage_nick, storageFD[storage_idx], storage_addr[storage_idx]);
+        }
+
         if (result.type() == "A"){
             ack_controllers[storage_nick].process_ack(result.seq_num());
             continue;
         }
-    
-    } while(result.flag() != "0" && result.type() != "A");
 
+    // If packet is not corrupted send one ACK, else send one more ACK
+        // Calc hash only to data, without header
+        string seq_num = result.seq_num();
+        bool is_good= (result.hash() == calc_hash(packet.data()))? true : false;
+        ack_controllers[storage_nick].replay_ack(seq_num);
+        // If packet is corrupted, send one more ACK
+        if (!is_good){
+            ack_controllers[storage_nick].replay_ack(seq_num);
+            // If packet isn't good, wait one more time; change the type of the packet so as not to get out of the loop
+            result.set_type("A");
+        }
+    } while(result.type() != "A" && result.flag() != "0");
+    
+    vector <unsigned char> data = result.data(); // data: 00notification-----...
+    int data_size = stoi(string(data.begin(), data.begin()+2)) + 2;
+    return string(data.begin(), data.begin() + data_size);
+}
+
+string process_read_query(Packet packet){
+    return "";
+}
+
+void send_message(int destinyFD, struct sockaddr_in destiny_addr, string data, string destiny_nick){
+    return;
 }

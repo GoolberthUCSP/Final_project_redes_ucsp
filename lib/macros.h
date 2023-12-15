@@ -27,10 +27,11 @@
     #include "cache.h"
     #include "util.h"
     #include "packet.h"
-    // SIZE of packet
-    #define SIZE 1024
+    // SIZE defined in packet.h
     // Timeout in seconds
     #define SEC_TIMEOUT 2
+    // Timeout in microseconds
+    #define USEC_TIMEOUT 0
     // CACHE_SIZE of packets
     #define ERROR(s) {perror(s); exit(1);}
     

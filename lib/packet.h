@@ -2,7 +2,7 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#define PACKET_SIZE 1024
+#define SIZE 1024
 
 #include <iostream>
 #include <cstring>
@@ -18,10 +18,10 @@ class Packet{
     char packet_flag;
     char nickname_size;
     char nickname_value[9];
-    char data_value[PACKET_SIZE - 23];
+    char data_value[SIZE - 23];
 public:
-    Packet(){ memset(this, '-', PACKET_SIZE); }
-    Packet(const Packet &packet){ memcpy(this, &packet, PACKET_SIZE); }
+    Packet(){ memset(this, '-', SIZE); }
+    Packet(const Packet &packet){ memcpy(this, &packet, SIZE); }
     // Getters
     string seq_num(){ return string(seq_number, 2); }
     string hash(){ return string(hash_value, 6); }
@@ -30,10 +30,10 @@ public:
     string flag(){ return string(&packet_flag, 1); }
     string nick_size(){ return string(&nickname_size, 1); }
     string nickname(){ return string(nickname_value, nickname_size-'0'); }
-    vector<unsigned char> data(){ return vector<unsigned char>(data_value, data_value + PACKET_SIZE - 23); }
-    string data_str(){ return string(data_value, PACKET_SIZE - 23); }
+    vector<unsigned char> data(){ return vector<unsigned char>(data_value, data_value + SIZE - 23); }
+    string data_str(){ return string(data_value, SIZE - 23); }
     string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nickname(); }
-    int data_size(){ return PACKET_SIZE - 23; }
+    int data_size(){ return SIZE - 23; }
 
     // Setters
     void set_seq_num(string seq_num){ copy(seq_num.begin(), seq_num.end(), seq_number); }
@@ -46,17 +46,24 @@ public:
         copy(nick.begin(), nick.end(), nickname_value);
         nickname_size = to_string(nick.size())[0];
     }
-    void set_data(vector<unsigned char> data){ copy(data.begin(), data.end(), data_value); }
-    void set_data(string data){ copy(data.begin(), data.end(), data_value); }
+    void set_data(vector<unsigned char> data){ 
+        clear_data();
+        copy(data.begin(), data.end(), data_value); 
+    }
+    void set_data(string data){ 
+        clear_data();
+        copy(data.begin(), data.end(), data_value); 
+    }
     void set_header(string header){ copy(header.begin(), header.end(), seq_number); }
 
-    void clear(){ memset(this, '-', PACKET_SIZE); }
+    void clear(){ memset(this, '-', SIZE); }
+    void clear_data(){ memset(data_value, '-', SIZE - 23); }
     void print(){
         cout << seq_num() << "|" << hash() << "|" << type() << "|" << msg_id() << "|" << flag() << "|" << nick_size() << "|" << nickname() << endl;
         //cout << "data: " << data_str() << endl;
     }
 
-    void operator = (const Packet& packet){ memcpy(this, &packet, PACKET_SIZE); }
+    void operator = (const Packet& packet){ memcpy(this, &packet, SIZE); }
 };
 
 #endif
