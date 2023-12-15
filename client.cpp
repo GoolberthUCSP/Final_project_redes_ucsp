@@ -1,5 +1,6 @@
 #include "lib/macros.h"
 #include "lib/ack.h"
+#include "lib/send.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ void read_response(vector<unsigned char> data);
 void recv_notification(vector<unsigned char> data);
 
 // Other functions
-void send_packet(Packet packet);
+void send_packet_to_server(Packet packet);
 
 typedef void (*req_ptr)(stringstream&);
 typedef void (*recv_ptr)(vector<unsigned char>);
@@ -45,9 +46,9 @@ map<string, req_ptr> request_functions({
     {"delete", &delete_request}
 });
 
-map<char, recv_ptr> response_functions({
-    {'R', &read_response},
-    {'N', &recv_notification}
+map<string, recv_ptr> response_functions({
+    {"R", &read_response},
+    {"N", &recv_notification}
 });
 
 int main(){
@@ -161,7 +162,7 @@ void create_request(stringstream &ss){
     string data = size1 + node1 + size2 + node2;
     
     packet.set_data(data);
-    send_packet(packet);
+    send_packet_to_server(packet);
 }
 
 void read_request(stringstream &ss){
@@ -175,7 +176,7 @@ void read_request(stringstream &ss){
     string data = size + node + "1"; // Depth = 1
     
     packet.set_data(data);
-    send_packet(packet);
+    send_packet_to_server(packet);
 }
 
 void rread_request(stringstream &ss){
@@ -190,7 +191,7 @@ void rread_request(stringstream &ss){
     string data = size + node + depth;
     
     packet.set_data(data);
-    send_packet(packet);
+    send_packet_to_server(packet);
 }
 
 void update_request(stringstream &ss){
@@ -208,7 +209,7 @@ void update_request(stringstream &ss){
     string data = size1 + node1 + size2 + node2 + size3 + new2;
     
     packet.set_data(data);
-    send_packet(packet);
+    send_packet_to_server(packet);
 }
 
 void delete_request(stringstream &ss){
@@ -224,7 +225,7 @@ void delete_request(stringstream &ss){
     string data = size1 + node1 + size2 + node2;
     
     packet.set_data(data);
-    send_packet(packet);
+    send_packet_to_server(packet);
 }
 
 // Receive functions
@@ -241,6 +242,8 @@ void read_response(stringstream &ss){
     string nodes(stoi(nodes_size), 0);
     ss.read(nodes.data(), nodes.size());
     cout << "Read response: " << node << "->" << nodes << endl;
+
+    // TODO: Process the recursive read response
 }
 
 void recv_notification(stringstream &ss){
@@ -252,8 +255,12 @@ void recv_notification(stringstream &ss){
     ss.read(notification.data(), notification.size());
     cout << "Notification received: " << notification << endl;
 }
-
-void send_packet(Packet packet){
+/*
+    Send packet to server
+    @param packet: packet to send with sections TYPE and DATA filled
+    @return void
+*/
+void send_packet_to_server(Packet packet){
     string seq_num = format_int(seq_number, 2);
 
     packet.set_seq_num(seq_num);
@@ -262,10 +269,7 @@ void send_packet(Packet packet){
     packet.set_nickname(nickname);
     packet.set_flag("0");
 
-    // Save packet into Cache if it's necesary to resend
-    ack_controller.insert_packet(seq_number, packet);
-    ack_controller.acks_to_recv.insert(seq_num);
-    sendto(serverFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
+    send_packet(serverFD, server_addr, ack_controller, packet);
     
     seq_number = (seq_number + 1) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id
