@@ -9,6 +9,7 @@ string MAIN_IP = "127.0.0.1";
 int seq_number = 0;
 int msg_id = 0;
 int storage_idx;
+string storage_nick;
 int addr_len= sizeof(struct sockaddr_in);
 
 ACK_controller ack_controller;
@@ -29,11 +30,11 @@ void keep_alive();
 string get_relations(string node);
 
 typedef void (*func_ptr)(vector<unsigned char>);
-map<char, func_ptr> crud_requests({
-    {'C', &create_request},
-    {'R', &read_request},
-    {'U', &update_request},
-    {'D', &delete_request}
+map<string, func_ptr> crud_requests({
+    {"C", &create_request},
+    {"R", &read_request},
+    {"U", &update_request},
+    {"D", &delete_request}
 });
 
 int main(int argc, char *argv[]){
@@ -42,8 +43,9 @@ int main(int argc, char *argv[]){
         return 1;
     }
     storage_idx = atoi(argv[1])%4;
+    storage_nick = to_string(storage_idx);
     int port = storage_ports[storage_idx];
-    ack_controller = ACK_controller(to_string(storage_idx), mainFD, main_addr);
+    ack_controller = ACK_controller(storage_nick, mainFD, main_addr);
 
     int bytes_readed;
     Packet recv_packet;
@@ -96,14 +98,14 @@ void processing(Packet packet){
         ack_controller.replay_ack(seq_num);
     // If packet is good, process it
     else
-        thread(crud_requests[packet.type()[0]], data).detach();
+        thread(crud_requests[packet.type()], data).detach();
 }
 
 void send_message(string type, string data){
     Packet packet;
     packet.set_type(type);
     packet.set_msg_id(format_int(msg_id, 3));
-    packet.set_nickname(to_string(storage_idx));
+    packet.set_nickname(storage_nick);
 
     int packet_data_size = packet.data_size();
     int remaining_size = data.size();
@@ -187,9 +189,8 @@ void read_request(vector<unsigned char> data){
     }
     //Return response to primary server
     string result = get_relations(node);
-    ostringstream size_os;
-    size_os << setw(3) << setfill('0') << result.size();
-    result = size_os.str() + result;
+    string size_res = format_int(result.size(), 3);
+    result = size_res + result;
     // Send response
     send_message("R", result);
 }
@@ -256,14 +257,12 @@ void delete_request(vector<unsigned char> data){
 
 void keep_alive(){
     int num;
-    string data;
-    data = to_string(storage_idx);
+    string data(1, 0);
     // Send first message to identify this storage in main server
-    sendto(keep_aliveFD, data.data(), data.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
+    sendto(keep_aliveFD, storage_nick.data(), storage_nick.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
     while(true){
         num = recvfrom(keep_aliveFD, data.data(), data.size(), MSG_WAITALL, (struct sockaddr *)&keep_alive_addr, (socklen_t *)&addr_len);
-        data = to_string(storage_idx);
-        sendto(keep_aliveFD, data.data(), data.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
+        sendto(keep_aliveFD, storage_nick.data(), storage_nick.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
     }
 }
 

@@ -94,7 +94,7 @@ void processing_client(struct sockaddr_in client, Packet packet){
     
     // If it´s the first connection from the client
     if (ack_controllers.find(nickname) == ack_controllers.end()){
-        ack_controllers[nickname] = ACK_controller(nickname, clientFD, client);
+        ack_controllers[nickname] = ACK_controller("MAIN", clientFD, client);
     }
 
     // If packet is ack
@@ -248,7 +248,7 @@ string process_cud_query(int storage_idx, Packet packet){
         
         // If it's the response of the server's first query.
         if (ack_controllers.find(storage_nick) == ack_controllers.end()){
-            ack_controllers[storage_nick] = ACK_controller(storage_nick, storageFD[storage_idx], storage_addr[storage_idx]);
+            ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);
         }
 
         if (result.type() == "A"){
@@ -274,10 +274,22 @@ string process_cud_query(int storage_idx, Packet packet){
     return string(data.begin(), data.begin() + data_size);
 }
 
+/*
+    Process general read query: recursive and simple read
+    @param packet: packet to send to the storage server
+    @return: result of the recursive or simple read   
+*/
 string process_read_query(Packet packet){
     return "";
 }
-
+/*
+    Send a message that can be too long to be sent in one packet
+    @param destinyFD: file descriptor of the destiny (socket)
+    @param destiny_addr: address of the destiny
+    @param data: data to send
+    @param destiny_nick: nickname of the destiny
+    @return: void
+*/
 void send_message(int destinyFD, struct sockaddr_in destiny_addr, string data, string destiny_nick){
     return;
 }

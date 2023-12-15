@@ -63,9 +63,7 @@ int main(){
     cin.clear();
     if (nickname.size() > 9) 
         nickname.resize(9);
-    ostringstream oss;
-    oss << setw(1) << setfill('0') << nickname.size();
-    nick_size = oss.str();
+    nick_size = to_string(nickname.size());
 
     ack_controller = ACK_controller(nickname, serverFD, server_addr);
 
