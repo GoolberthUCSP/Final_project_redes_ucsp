@@ -69,5 +69,5 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_num, packet);
     int bytes_sent = sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
-    cout << "Sent packet to " << inet_ntoa(destiny_addr.sin_addr) << ":" << ntohs(destiny_addr.sin_port) << " bytes sent: " << bytes_sent << endl;
+    cout << "Sent packet type (" << packet.type() << ") to " << inet_ntoa(destiny_addr.sin_addr) << ":" << ntohs(destiny_addr.sin_port) << "| bytes sent: " << bytes_sent << endl;
 }

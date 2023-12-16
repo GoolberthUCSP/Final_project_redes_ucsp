@@ -137,9 +137,12 @@ void answer_query(struct sockaddr_in client, Packet packet){
     else {
         if (is_alive[key] || is_alive[next_key]){
             // Do the query to the main storage server
-            string notification = process_cud_query(key, packet);
+            string notification;
+            if (is_alive[key])
+                notification = process_cud_query(key, packet);
             // Do the same operation with the next storage server
-            process_cud_query(next_key, packet);
+            if (is_alive[next_key])
+                notification = process_cud_query(next_key, packet);
             // Send only a notification to the client
             send_message_to_one(clientFD, client, notification, "N", packet.nickname());
         }
@@ -215,7 +218,7 @@ string process_cud_query(int storage_idx, Packet packet){
     do{
         result.clear();
         int bytes_readed = recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
-        cout << "Received packet from storage " << storage_idx << endl;
+        cout << "Received packet type (" << result.type() << ") from storage " << storage_idx << endl;
         // If it's the response of the server's first query.
         if (ack_controllers.find(storage_nick) == ack_controllers.end()){
             ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);

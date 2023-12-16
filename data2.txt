@@ -1,0 +1,1471 @@
+orange_peel orange plant
+orange orange_peel fruit
+orange orange_juice fruit
+orange citrus fruit
+orange citrus_peel fruit
+orange nutmeg fruit
+orange bergamot fruit
+orange strawberry fruit
+orange grapefruit fruit
+orange mandarin fruit
+orange lemon_peel fruit
+orange apple fruit
+orange lime fruit
+orange bitter_orange fruit
+orange basil fruit
+orange tangerine fruit
+orange lemon fruit
+cinnamon tarragon spice
+cinnamon anise spice
+cinnamon ginger spice
+cinnamon fennel spice
+cinnamon nutmeg spice
+cinnamon guava spice
+cinnamon star_anise spice
+tarragon cinnamon herb
+anise cinnamon spice
+anise star_anise spice
+anise clove spice
+ginger cinnamon spice
+ginger marjoram spice
+ginger nutmeg spice
+ginger rosemary spice
+ginger mace spice
+fennel cinnamon herb
+fennel star_anise herb
+nutmeg cinnamon spice
+nutmeg ginger spice
+nutmeg mace spice
+nutmeg seed spice
+nutmeg orange spice
+nutmeg black_sesame_seed spice
+nutmeg rapeseed spice
+guava cinnamon fruit
+guava strawberry fruit
+guava nectarine fruit
+guava black_tea fruit
+star_anise cinnamon spice
+star_anise fennel spice
+star_anise anise spice
+cherry apple fruit
+apple cherry fruit
+apple cabernet_sauvignon_wine fruit
+apple orange_juice fruit
+apple white_wine fruit
+apple pineapple fruit
+apple grape fruit
+apple cognac fruit
+apple melon fruit
+apple apple_brandy fruit
+apple cider fruit
+apple strawberry fruit
+apple quince fruit
+apple bartlett_pear fruit
+apple banana fruit
+apple pear fruit
+apple concord_grape fruit
+apple plum fruit
+apple muscat_grape fruit
+apple honey fruit
+apple nectarine fruit
+apple beer fruit
+apple orange fruit
+apple kiwi fruit
+apple red_wine fruit
+apple apricot fruit
+roasted_pork pork meat
+roasted_pork raw_beef meat
+roasted_pork beef meat
+roasted_pork bacon meat
+roasted_pork cured_pork meat
+roasted_pork chicken meat
+roasted_pork roasted_beef meat
+roasted_pork pork_sausage meat
+pork roasted_pork meat
+pork chicken meat
+pork raw_beef meat
+pork beef meat
+pork bacon meat
+pork cured_pork meat
+pork roasted_beef meat
+pork pork_sausage meat
+raw_beef roasted_pork meat
+raw_beef chicken meat
+raw_beef lamb meat
+raw_beef pork meat
+raw_beef beef meat
+raw_beef roasted_peanut meat
+raw_beef caviar meat
+raw_beef peanut meat
+raw_beef bacon meat
+raw_beef coffee meat
+raw_beef onion meat
+raw_beef cured_pork meat
+raw_beef beer meat
+raw_beef baked_potato meat
+raw_beef peanut_butter meat
+raw_beef soybean meat
+raw_beef roasted_beef meat
+raw_beef pork_sausage meat
+raw_beef pork_liver meat
+beef roasted_pork meat
+beef chicken meat
+beef raw_beef meat
+beef peanut meat
+beef coffee meat
+beef peanut_butter meat
+beef onion meat
+beef pork meat
+beef bacon meat
+beef roasted_peanut meat
+beef soybean meat
+beef lamb meat
+beef caviar meat
+beef cured_pork meat
+beef beer meat
+beef baked_potato meat
+beef roasted_beef meat
+beef pork_sausage meat
+beef pork_liver meat
+bacon roasted_pork meat
+bacon chicken meat
+bacon raw_beef meat
+bacon pork meat
+bacon beef meat
+bacon cured_pork meat
+bacon roasted_beef meat
+bacon pork_sausage meat
+cured_pork roasted_pork meat
+cured_pork chicken meat
+cured_pork raw_beef meat
+cured_pork pork meat
+cured_pork bacon meat
+cured_pork beef meat
+cured_pork roasted_beef meat
+cured_pork pork_sausage meat
+chicken roasted_pork meat
+chicken pork meat
+chicken raw_beef meat
+chicken beef meat
+chicken bacon meat
+chicken cured_pork meat
+chicken roasted_beef meat
+chicken pork_sausage meat
+roasted_beef roasted_pork meat
+roasted_beef chicken meat
+roasted_beef milk meat
+roasted_beef raw_beef meat
+roasted_beef peanut meat
+roasted_beef coffee meat
+roasted_beef peanut_butter meat
+roasted_beef onion meat
+roasted_beef pork meat
+roasted_beef bacon meat
+roasted_beef roasted_peanut meat
+roasted_beef soybean meat
+roasted_beef beef meat
+roasted_beef caviar meat
+roasted_beef cured_pork meat
+roasted_beef beer meat
+roasted_beef lamb meat
+roasted_beef sturgeon_caviar meat
+roasted_beef shallot meat
+roasted_beef baked_potato meat
+roasted_beef garlic meat
+roasted_beef pork_sausage meat
+roasted_beef butter meat
+roasted_beef potato meat
+roasted_beef potato_chip meat
+roasted_beef pork_liver meat
+roasted_beef egg meat
+pork_sausage roasted_pork meat
+pork_sausage chicken meat
+pork_sausage raw_beef meat
+pork_sausage pork meat
+pork_sausage bacon meat
+pork_sausage beef meat
+pork_sausage cured_pork meat
+pork_sausage roasted_beef meat
+cabernet_sauvignon_wine jamaican_rum alcoholic beverage
+cabernet_sauvignon_wine apple alcoholic beverage
+cabernet_sauvignon_wine rum alcoholic beverage
+cabernet_sauvignon_wine red_wine alcoholic beverage
+cabernet_sauvignon_wine cider alcoholic beverage
+cabernet_sauvignon_wine port_wine alcoholic beverage
+cabernet_sauvignon_wine white_wine alcoholic beverage
+cabernet_sauvignon_wine champagne_wine alcoholic beverage
+cabernet_sauvignon_wine whiskey alcoholic beverage
+cabernet_sauvignon_wine beer alcoholic beverage
+cabernet_sauvignon_wine cognac alcoholic beverage
+cabernet_sauvignon_wine pineapple alcoholic beverage
+cabernet_sauvignon_wine sherry alcoholic beverage
+cabernet_sauvignon_wine apple_brandy alcoholic beverage
+cabernet_sauvignon_wine wine alcoholic beverage
+jamaican_rum cabernet_sauvignon_wine alcoholic beverage
+jamaican_rum white_wine alcoholic beverage
+jamaican_rum cognac alcoholic beverage
+jamaican_rum apple_brandy alcoholic beverage
+jamaican_rum cider alcoholic beverage
+jamaican_rum rum alcoholic beverage
+jamaican_rum champagne_wine alcoholic beverage
+jamaican_rum blue_cheese alcoholic beverage
+jamaican_rum black_tea alcoholic beverage
+jamaican_rum beer alcoholic beverage
+jamaican_rum red_wine alcoholic beverage
+jamaican_rum port_wine alcoholic beverage
+jamaican_rum whiskey alcoholic beverage
+jamaican_rum parmesan_cheese alcoholic beverage
+jamaican_rum sherry alcoholic beverage
+jamaican_rum wine alcoholic beverage
+rum cabernet_sauvignon_wine alcoholic beverage
+rum white_wine alcoholic beverage
+rum cognac alcoholic beverage
+rum apple_brandy alcoholic beverage
+rum cider alcoholic beverage
+rum jamaican_rum alcoholic beverage
+rum red_wine alcoholic beverage
+rum port_wine alcoholic beverage
+rum whiskey alcoholic beverage
+rum beer alcoholic beverage
+rum parmesan_cheese alcoholic beverage
+rum black_tea alcoholic beverage
+rum sherry alcoholic beverage
+rum blue_cheese alcoholic beverage
+red_wine cabernet_sauvignon_wine alcoholic beverage
+red_wine white_wine alcoholic beverage
+red_wine pineapple alcoholic beverage
+red_wine cognac alcoholic beverage
+red_wine apple_brandy alcoholic beverage
+red_wine cider alcoholic beverage
+red_wine rum alcoholic beverage
+red_wine champagne_wine alcoholic beverage
+red_wine apple alcoholic beverage
+red_wine beer alcoholic beverage
+red_wine jamaican_rum alcoholic beverage
+red_wine whiskey alcoholic beverage
+red_wine port_wine alcoholic beverage
+red_wine sherry alcoholic beverage
+red_wine wine alcoholic beverage
+cider cabernet_sauvignon_wine alcoholic beverage
+cider white_wine alcoholic beverage
+cider cognac alcoholic beverage
+cider apple_brandy alcoholic beverage
+cider jamaican_rum alcoholic beverage
+cider rum alcoholic beverage
+cider red_wine alcoholic beverage
+cider port_wine alcoholic beverage
+cider beer alcoholic beverage
+cider sherry alcoholic beverage
+cider apple alcoholic beverage
+port_wine cabernet_sauvignon_wine alcoholic beverage
+port_wine white_wine alcoholic beverage
+port_wine cognac alcoholic beverage
+port_wine apple_brandy alcoholic beverage
+port_wine cider alcoholic beverage
+port_wine rum alcoholic beverage
+port_wine champagne_wine alcoholic beverage
+port_wine beer alcoholic beverage
+port_wine jamaican_rum alcoholic beverage
+port_wine red_wine alcoholic beverage
+port_wine sherry alcoholic beverage
+port_wine wine alcoholic beverage
+white_wine cabernet_sauvignon_wine alcoholic beverage
+white_wine apple alcoholic beverage
+white_wine port_wine alcoholic beverage
+white_wine cocoa alcoholic beverage
+white_wine black_tea alcoholic beverage
+white_wine passion_fruit alcoholic beverage
+white_wine whiskey alcoholic beverage
+white_wine beer alcoholic beverage
+white_wine cognac alcoholic beverage
+white_wine sherry alcoholic beverage
+white_wine red_wine alcoholic beverage
+white_wine rum alcoholic beverage
+white_wine muscat_grape alcoholic beverage
+white_wine champagne_wine alcoholic beverage
+white_wine brandy alcoholic beverage
+white_wine apple_brandy alcoholic beverage
+white_wine jamaican_rum alcoholic beverage
+white_wine cider alcoholic beverage
+white_wine parmesan_cheese alcoholic beverage
+white_wine strawberry alcoholic beverage
+white_wine pineapple alcoholic beverage
+white_wine wine alcoholic beverage
+champagne_wine cabernet_sauvignon_wine alcoholic beverage
+champagne_wine white_wine alcoholic beverage
+champagne_wine cognac alcoholic beverage
+champagne_wine jamaican_rum alcoholic beverage
+champagne_wine red_wine alcoholic beverage
+champagne_wine port_wine alcoholic beverage
+champagne_wine beer alcoholic beverage
+champagne_wine sherry alcoholic beverage
+champagne_wine wine alcoholic beverage
+whiskey cabernet_sauvignon_wine alcoholic beverage
+whiskey white_wine alcoholic beverage
+whiskey cognac alcoholic beverage
+whiskey rum alcoholic beverage
+whiskey beer alcoholic beverage
+whiskey jamaican_rum alcoholic beverage
+whiskey parmesan_cheese alcoholic beverage
+whiskey red_wine alcoholic beverage
+whiskey sherry alcoholic beverage
+beer cabernet_sauvignon_wine alcoholic beverage
+beer white_wine alcoholic beverage
+beer milk alcoholic beverage
+beer katsuobushi alcoholic beverage
+beer raw_beef alcoholic beverage
+beer cognac alcoholic beverage
+beer coffee alcoholic beverage
+beer cider alcoholic beverage
+beer rum alcoholic beverage
+beer champagne_wine alcoholic beverage
+beer swiss_cheese alcoholic beverage
+beer blue_cheese alcoholic beverage
+beer cheddar_cheese alcoholic beverage
+beer apple alcoholic beverage
+beer cocoa alcoholic beverage
+beer beef alcoholic beverage
+beer port_wine alcoholic beverage
+beer hop alcoholic beverage
+beer sherry alcoholic beverage
+beer roasted_beef alcoholic beverage
+beer red_wine alcoholic beverage
+beer gruyere_cheese alcoholic beverage
+beer jamaican_rum alcoholic beverage
+beer malt alcoholic beverage
+beer whiskey alcoholic beverage
+beer pork_liver alcoholic beverage
+beer wine alcoholic beverage
+cognac cabernet_sauvignon_wine alcoholic beverage
+cognac white_wine alcoholic beverage
+cognac apple alcoholic beverage
+cognac jamaican_rum alcoholic beverage
+cognac rum alcoholic beverage
+cognac cider alcoholic beverage
+cognac red_wine alcoholic beverage
+cognac grape_brandy alcoholic beverage
+cognac port_wine alcoholic beverage
+cognac champagne_wine alcoholic beverage
+cognac whiskey alcoholic beverage
+cognac beer alcoholic beverage
+cognac sherry alcoholic beverage
+cognac apple_brandy alcoholic beverage
+cognac wine alcoholic beverage
+pineapple cabernet_sauvignon_wine fruit
+pineapple white_wine fruit
+pineapple strawberry fruit
+pineapple red_wine fruit
+pineapple apple fruit
+sherry cabernet_sauvignon_wine alcoholic beverage
+sherry white_wine alcoholic beverage
+sherry cognac alcoholic beverage
+sherry apple_brandy alcoholic beverage
+sherry cider alcoholic beverage
+sherry rum alcoholic beverage
+sherry champagne_wine alcoholic beverage
+sherry beer alcoholic beverage
+sherry jamaican_rum alcoholic beverage
+sherry whiskey alcoholic beverage
+sherry port_wine alcoholic beverage
+sherry red_wine alcoholic beverage
+sherry wine alcoholic beverage
+apple_brandy cabernet_sauvignon_wine alcoholic beverage
+apple_brandy white_wine alcoholic beverage
+apple_brandy cognac alcoholic beverage
+apple_brandy apple alcoholic beverage
+apple_brandy rum alcoholic beverage
+apple_brandy red_wine alcoholic beverage
+apple_brandy cider alcoholic beverage
+apple_brandy port_wine alcoholic beverage
+apple_brandy sherry alcoholic beverage
+apple_brandy jamaican_rum alcoholic beverage
+wine cabernet_sauvignon_wine alcoholic beverage
+wine white_wine alcoholic beverage
+wine cognac alcoholic beverage
+wine champagne_wine alcoholic beverage
+wine beer alcoholic beverage
+wine jamaican_rum alcoholic beverage
+wine port_wine alcoholic beverage
+wine sherry alcoholic beverage
+wine red_wine alcoholic beverage
+orange_juice orange fruit
+orange_juice apple fruit
+rye_bread wheat_bread cereal/crop
+rye_bread bread cereal/crop
+wheat_bread rye_bread cereal/crop
+wheat_bread bread cereal/crop
+bread rye_bread cereal/crop
+bread white_bread cereal/crop
+bread wheat_bread cereal/crop
+cocoa white_wine plant derivative
+cocoa katsuobushi plant derivative
+cocoa coffee plant derivative
+cocoa black_tea plant derivative
+cocoa beer plant derivative
+black_tea white_wine plant derivative
+black_tea katsuobushi plant derivative
+black_tea geranium plant derivative
+black_tea coffee plant derivative
+black_tea thyme plant derivative
+black_tea citrus_peel plant derivative
+black_tea vanilla plant derivative
+black_tea tea plant derivative
+black_tea guava plant derivative
+black_tea peppermint plant derivative
+black_tea rum plant derivative
+black_tea lemon_peel plant derivative
+black_tea jasmine_tea plant derivative
+black_tea jasmine plant derivative
+black_tea raspberry plant derivative
+black_tea lingonberry plant derivative
+black_tea bell_pepper plant derivative
+black_tea peppermint_oil plant derivative
+black_tea cocoa plant derivative
+black_tea soybean plant derivative
+black_tea passion_fruit plant derivative
+black_tea mint plant derivative
+black_tea strawberry_jam plant derivative
+black_tea okra plant derivative
+black_tea japanese_plum plant derivative
+black_tea basil plant derivative
+black_tea green_tea plant derivative
+black_tea spearmint plant derivative
+black_tea tomato plant derivative
+black_tea jamaican_rum plant derivative
+black_tea mango plant derivative
+passion_fruit white_wine fruit
+passion_fruit strawberry fruit
+passion_fruit quince fruit
+passion_fruit black_tea fruit
+muscat_grape white_wine fruit
+muscat_grape grape fruit
+muscat_grape strawberry fruit
+muscat_grape concord_grape fruit
+muscat_grape apple fruit
+brandy white_wine alcoholic beverage
+parmesan_cheese white_wine dairy
+parmesan_cheese milk dairy
+parmesan_cheese camembert_cheese dairy
+parmesan_cheese rum dairy
+parmesan_cheese swiss_cheese dairy
+parmesan_cheese blue_cheese dairy
+parmesan_cheese cheddar_cheese dairy
+parmesan_cheese cheese dairy
+parmesan_cheese roquefort_cheese dairy
+parmesan_cheese provolone_cheese dairy
+parmesan_cheese romano_cheese dairy
+parmesan_cheese cream_cheese dairy
+parmesan_cheese jamaican_rum dairy
+parmesan_cheese gruyere_cheese dairy
+parmesan_cheese cottage_cheese dairy
+parmesan_cheese goat_cheese dairy
+parmesan_cheese mozzarella_cheese dairy
+parmesan_cheese sheep_cheese dairy
+parmesan_cheese feta_cheese dairy
+parmesan_cheese emmental_cheese dairy
+parmesan_cheese whiskey dairy
+parmesan_cheese munster_cheese dairy
+strawberry white_wine fruit
+strawberry pineapple fruit
+strawberry grape fruit
+strawberry huckleberry fruit
+strawberry melon fruit
+strawberry juniper_berry fruit
+strawberry blackberry fruit
+strawberry guava fruit
+strawberry black_currant fruit
+strawberry apple fruit
+strawberry honey fruit
+strawberry elderberry fruit
+strawberry passion_fruit fruit
+strawberry nectarine fruit
+strawberry bitter_orange fruit
+strawberry orange fruit
+strawberry quince fruit
+strawberry bartlett_pear fruit
+strawberry banana fruit
+strawberry kiwi fruit
+strawberry papaya fruit
+strawberry pear fruit
+strawberry muscat_grape fruit
+strawberry tangerine fruit
+strawberry olive fruit
+strawberry raspberry fruit
+strawberry concord_grape fruit
+strawberry apricot fruit
+strawberry plum fruit
+strawberry blueberry fruit
+strawberry black_raspberry fruit
+strawberry mango fruit
+strawberry berry fruit
+strawberry cranberry fruit
+marjoram ginger herb
+porcini matsutake vegetable
+porcini enokidake vegetable
+porcini shiitake vegetable
+porcini mushroom vegetable
+matsutake porcini vegetable
+matsutake shiitake vegetable
+matsutake enokidake vegetable
+matsutake mushroom vegetable
+enokidake porcini vegetable
+enokidake matsutake vegetable
+enokidake shiitake vegetable
+enokidake mushroom vegetable
+shiitake porcini vegetable
+shiitake matsutake vegetable
+shiitake enokidake vegetable
+shiitake mushroom vegetable
+mushroom porcini vegetable
+mushroom matsutake vegetable
+mushroom shiitake vegetable
+mushroom enokidake vegetable
+milk beer dairy
+milk cheddar_cheese dairy
+milk roasted_beef dairy
+milk parmesan_cheese dairy
+milk blue_cheese dairy
+cheddar_cheese milk dairy
+cheddar_cheese camembert_cheese dairy
+cheddar_cheese swiss_cheese dairy
+cheddar_cheese blue_cheese dairy
+cheddar_cheese provolone_cheese dairy
+cheddar_cheese cheese dairy
+cheddar_cheese feta_cheese dairy
+cheddar_cheese cream dairy
+cheddar_cheese romano_cheese dairy
+cheddar_cheese roquefort_cheese dairy
+cheddar_cheese emmental_cheese dairy
+cheddar_cheese buttermilk dairy
+cheddar_cheese parmesan_cheese dairy
+cheddar_cheese cottage_cheese dairy
+cheddar_cheese goat_cheese dairy
+cheddar_cheese beer dairy
+cheddar_cheese cream_cheese dairy
+cheddar_cheese mozzarella_cheese dairy
+cheddar_cheese munster_cheese dairy
+cheddar_cheese sheep_cheese dairy
+cheddar_cheese gruyere_cheese dairy
+blue_cheese milk dairy
+blue_cheese camembert_cheese dairy
+blue_cheese rum dairy
+blue_cheese swiss_cheese dairy
+blue_cheese cheese dairy
+blue_cheese roquefort_cheese dairy
+blue_cheese cream dairy
+blue_cheese provolone_cheese dairy
+blue_cheese romano_cheese dairy
+blue_cheese cottage_cheese dairy
+blue_cheese buttermilk dairy
+blue_cheese beer dairy
+blue_cheese goat_cheese dairy
+blue_cheese cream_cheese dairy
+blue_cheese mozzarella_cheese dairy
+blue_cheese sheep_cheese dairy
+blue_cheese gruyere_cheese dairy
+blue_cheese jamaican_rum dairy
+blue_cheese feta_cheese dairy
+blue_cheese emmental_cheese dairy
+blue_cheese parmesan_cheese dairy
+blue_cheese munster_cheese dairy
+blue_cheese cheddar_cheese dairy
+katsuobushi cocoa fish/seafood
+katsuobushi coffee fish/seafood
+katsuobushi beer fish/seafood
+katsuobushi black_tea fish/seafood
+coffee katsuobushi plant derivative
+coffee raw_beef plant derivative
+coffee beef plant derivative
+coffee roasted_peanut plant derivative
+coffee jasmine_tea plant derivative
+coffee tea plant derivative
+coffee green_tea plant derivative
+coffee cocoa plant derivative
+coffee okra plant derivative
+coffee beer plant derivative
+coffee wood plant derivative
+coffee peanut_butter plant derivative
+coffee black_tea plant derivative
+coffee popcorn plant derivative
+coffee squid plant derivative
+coffee roasted_beef plant derivative
+coffee pork_liver plant derivative
+lamb raw_beef meat
+lamb beef meat
+lamb roasted_beef meat
+roasted_peanut raw_beef nut/seed/pulse
+roasted_peanut peanut nut/seed/pulse
+roasted_peanut coffee nut/seed/pulse
+roasted_peanut peanut_butter nut/seed/pulse
+roasted_peanut beef nut/seed/pulse
+roasted_peanut potato_chip nut/seed/pulse
+roasted_peanut soybean nut/seed/pulse
+roasted_peanut popcorn nut/seed/pulse
+roasted_peanut roasted_beef nut/seed/pulse
+roasted_peanut pork_liver nut/seed/pulse
+caviar raw_beef fish/seafood
+caviar smoked_salmon fish/seafood
+caviar beef fish/seafood
+caviar sturgeon_caviar fish/seafood
+caviar salmon fish/seafood
+caviar tuna fish/seafood
+caviar roasted_beef fish/seafood
+peanut raw_beef nut/seed/pulse
+peanut beef nut/seed/pulse
+peanut peanut_butter nut/seed/pulse
+peanut roasted_peanut nut/seed/pulse
+peanut roasted_beef nut/seed/pulse
+onion raw_beef vegetable
+onion beef vegetable
+onion shallot vegetable
+onion garlic vegetable
+onion chive vegetable
+onion roasted_beef vegetable
+baked_potato raw_beef vegetable
+baked_potato beef vegetable
+baked_potato roasted_beef vegetable
+baked_potato potato vegetable
+peanut_butter raw_beef plant derivative
+peanut_butter peanut plant derivative
+peanut_butter coffee plant derivative
+peanut_butter beef plant derivative
+peanut_butter roasted_peanut plant derivative
+peanut_butter potato_chip plant derivative
+peanut_butter pork_liver plant derivative
+peanut_butter soybean plant derivative
+peanut_butter popcorn plant derivative
+peanut_butter roasted_beef plant derivative
+soybean raw_beef vegetable
+soybean mung_bean vegetable
+soybean lima_bean vegetable
+soybean bean vegetable
+soybean peanut_butter vegetable
+soybean kidney_bean vegetable
+soybean red_bean vegetable
+soybean roasted_peanut vegetable
+soybean black_bean vegetable
+soybean beef vegetable
+soybean okra vegetable
+soybean black_tea vegetable
+soybean red_kidney_bean vegetable
+soybean roasted_beef vegetable
+pork_liver raw_beef meat
+pork_liver coffee meat
+pork_liver peanut_butter meat
+pork_liver roasted_peanut meat
+pork_liver beef meat
+pork_liver beer meat
+pork_liver roasted_beef meat
+grape strawberry fruit
+grape muscat_grape fruit
+grape concord_grape fruit
+grape apple fruit
+concord_grape grape fruit
+concord_grape strawberry fruit
+concord_grape apple fruit
+concord_grape muscat_grape fruit
+huckleberry juniper_berry fruit
+huckleberry black_currant fruit
+huckleberry strawberry fruit
+huckleberry elderberry fruit
+huckleberry black_raspberry fruit
+huckleberry blackberry fruit
+huckleberry cranberry fruit
+huckleberry raspberry fruit
+huckleberry blueberry fruit
+huckleberry berry fruit
+juniper_berry huckleberry fruit
+juniper_berry black_currant fruit
+juniper_berry black_raspberry fruit
+juniper_berry elderberry fruit
+juniper_berry strawberry fruit
+juniper_berry blackberry fruit
+juniper_berry cranberry fruit
+juniper_berry raspberry fruit
+juniper_berry blueberry fruit
+juniper_berry berry fruit
+black_currant huckleberry fruit
+black_currant juniper_berry fruit
+black_currant blackberry fruit
+black_currant strawberry fruit
+black_currant black_raspberry fruit
+black_currant blueberry fruit
+black_currant berry fruit
+elderberry huckleberry fruit
+elderberry juniper_berry fruit
+elderberry strawberry fruit
+elderberry black_raspberry fruit
+elderberry berry fruit
+elderberry cranberry fruit
+elderberry raspberry fruit
+elderberry blueberry fruit
+black_raspberry huckleberry fruit
+black_raspberry juniper_berry fruit
+black_raspberry blackberry fruit
+black_raspberry strawberry fruit
+black_raspberry elderberry fruit
+black_raspberry raspberry fruit
+black_raspberry black_currant fruit
+black_raspberry cranberry fruit
+black_raspberry blueberry fruit
+black_raspberry berry fruit
+blackberry huckleberry fruit
+blackberry juniper_berry fruit
+blackberry black_currant fruit
+blackberry strawberry fruit
+blackberry black_raspberry fruit
+blackberry berry fruit
+blackberry raspberry fruit
+blackberry blueberry fruit
+cranberry huckleberry fruit
+cranberry juniper_berry fruit
+cranberry strawberry fruit
+cranberry elderberry fruit
+cranberry black_raspberry fruit
+cranberry blueberry fruit
+cranberry berry fruit
+raspberry huckleberry fruit
+raspberry juniper_berry fruit
+raspberry blackberry fruit
+raspberry strawberry fruit
+raspberry elderberry fruit
+raspberry black_raspberry fruit
+raspberry berry fruit
+raspberry black_tea fruit
+raspberry blueberry fruit
+blueberry huckleberry fruit
+blueberry juniper_berry fruit
+blueberry blackberry fruit
+blueberry strawberry fruit
+blueberry elderberry fruit
+blueberry raspberry fruit
+blueberry black_raspberry fruit
+blueberry black_currant fruit
+blueberry cranberry fruit
+blueberry berry fruit
+berry huckleberry fruit
+berry juniper_berry fruit
+berry blackberry fruit
+berry strawberry fruit
+berry elderberry fruit
+berry raspberry fruit
+berry black_raspberry fruit
+berry blueberry fruit
+berry black_currant fruit
+berry cranberry fruit
+camembert_cheese provolone_cheese dairy
+camembert_cheese cheese dairy
+camembert_cheese sheep_cheese dairy
+camembert_cheese romano_cheese dairy
+camembert_cheese roquefort_cheese dairy
+camembert_cheese emmental_cheese dairy
+camembert_cheese feta_cheese dairy
+camembert_cheese parmesan_cheese dairy
+camembert_cheese cottage_cheese dairy
+camembert_cheese mozzarella_cheese dairy
+camembert_cheese swiss_cheese dairy
+camembert_cheese cream_cheese dairy
+camembert_cheese blue_cheese dairy
+camembert_cheese goat_cheese dairy
+camembert_cheese munster_cheese dairy
+camembert_cheese cheddar_cheese dairy
+camembert_cheese gruyere_cheese dairy
+provolone_cheese camembert_cheese dairy
+provolone_cheese swiss_cheese dairy
+provolone_cheese blue_cheese dairy
+provolone_cheese cheddar_cheese dairy
+provolone_cheese cheese dairy
+provolone_cheese roquefort_cheese dairy
+provolone_cheese sheep_cheese dairy
+provolone_cheese romano_cheese dairy
+provolone_cheese emmental_cheese dairy
+provolone_cheese feta_cheese dairy
+provolone_cheese parmesan_cheese dairy
+provolone_cheese cottage_cheese dairy
+provolone_cheese goat_cheese dairy
+provolone_cheese cream_cheese dairy
+provolone_cheese mozzarella_cheese dairy
+provolone_cheese munster_cheese dairy
+provolone_cheese gruyere_cheese dairy
+cheese camembert_cheese dairy
+cheese swiss_cheese dairy
+cheese blue_cheese dairy
+cheese cheddar_cheese dairy
+cheese provolone_cheese dairy
+cheese gruyere_cheese dairy
+cheese romano_cheese dairy
+cheese roquefort_cheese dairy
+cheese emmental_cheese dairy
+cheese parmesan_cheese dairy
+cheese cottage_cheese dairy
+cheese goat_cheese dairy
+cheese cream_cheese dairy
+cheese mozzarella_cheese dairy
+cheese munster_cheese dairy
+cheese sheep_cheese dairy
+cheese feta_cheese dairy
+sheep_cheese camembert_cheese dairy
+sheep_cheese swiss_cheese dairy
+sheep_cheese blue_cheese dairy
+sheep_cheese cheddar_cheese dairy
+sheep_cheese cheese dairy
+sheep_cheese roquefort_cheese dairy
+sheep_cheese provolone_cheese dairy
+sheep_cheese romano_cheese dairy
+sheep_cheese cream_cheese dairy
+sheep_cheese gruyere_cheese dairy
+sheep_cheese parmesan_cheese dairy
+sheep_cheese cottage_cheese dairy
+sheep_cheese goat_cheese dairy
+sheep_cheese feta_cheese dairy
+sheep_cheese emmental_cheese dairy
+sheep_cheese mozzarella_cheese dairy
+sheep_cheese munster_cheese dairy
+romano_cheese camembert_cheese dairy
+romano_cheese swiss_cheese dairy
+romano_cheese blue_cheese dairy
+romano_cheese cheddar_cheese dairy
+romano_cheese cheese dairy
+romano_cheese roquefort_cheese dairy
+romano_cheese provolone_cheese dairy
+romano_cheese sheep_cheese dairy
+romano_cheese gruyere_cheese dairy
+romano_cheese emmental_cheese dairy
+romano_cheese parmesan_cheese dairy
+romano_cheese cottage_cheese dairy
+romano_cheese goat_cheese dairy
+romano_cheese cream_cheese dairy
+romano_cheese mozzarella_cheese dairy
+romano_cheese munster_cheese dairy
+romano_cheese feta_cheese dairy
+roquefort_cheese camembert_cheese dairy
+roquefort_cheese swiss_cheese dairy
+roquefort_cheese blue_cheese dairy
+roquefort_cheese cheddar_cheese dairy
+roquefort_cheese cheese dairy
+roquefort_cheese provolone_cheese dairy
+roquefort_cheese sheep_cheese dairy
+roquefort_cheese romano_cheese dairy
+roquefort_cheese feta_cheese dairy
+roquefort_cheese emmental_cheese dairy
+roquefort_cheese parmesan_cheese dairy
+roquefort_cheese cottage_cheese dairy
+roquefort_cheese mozzarella_cheese dairy
+roquefort_cheese cream_cheese dairy
+roquefort_cheese goat_cheese dairy
+roquefort_cheese munster_cheese dairy
+roquefort_cheese gruyere_cheese dairy
+emmental_cheese camembert_cheese dairy
+emmental_cheese swiss_cheese dairy
+emmental_cheese blue_cheese dairy
+emmental_cheese cheddar_cheese dairy
+emmental_cheese cheese dairy
+emmental_cheese roquefort_cheese dairy
+emmental_cheese provolone_cheese dairy
+emmental_cheese romano_cheese dairy
+emmental_cheese cream_cheese dairy
+emmental_cheese gruyere_cheese dairy
+emmental_cheese parmesan_cheese dairy
+emmental_cheese cottage_cheese dairy
+emmental_cheese goat_cheese dairy
+emmental_cheese sheep_cheese dairy
+emmental_cheese mozzarella_cheese dairy
+emmental_cheese feta_cheese dairy
+emmental_cheese munster_cheese dairy
+feta_cheese camembert_cheese dairy
+feta_cheese swiss_cheese dairy
+feta_cheese blue_cheese dairy
+feta_cheese cheddar_cheese dairy
+feta_cheese cheese dairy
+feta_cheese roquefort_cheese dairy
+feta_cheese provolone_cheese dairy
+feta_cheese romano_cheese dairy
+feta_cheese cream_cheese dairy
+feta_cheese gruyere_cheese dairy
+feta_cheese parmesan_cheese dairy
+feta_cheese cottage_cheese dairy
+feta_cheese goat_cheese dairy
+feta_cheese sheep_cheese dairy
+feta_cheese mozzarella_cheese dairy
+feta_cheese emmental_cheese dairy
+feta_cheese munster_cheese dairy
+cottage_cheese camembert_cheese dairy
+cottage_cheese swiss_cheese dairy
+cottage_cheese blue_cheese dairy
+cottage_cheese cheddar_cheese dairy
+cottage_cheese cheese dairy
+cottage_cheese roquefort_cheese dairy
+cottage_cheese provolone_cheese dairy
+cottage_cheese romano_cheese dairy
+cottage_cheese cream_cheese dairy
+cottage_cheese gruyere_cheese dairy
+cottage_cheese parmesan_cheese dairy
+cottage_cheese sheep_cheese dairy
+cottage_cheese emmental_cheese dairy
+cottage_cheese goat_cheese dairy
+cottage_cheese mozzarella_cheese dairy
+cottage_cheese munster_cheese dairy
+cottage_cheese feta_cheese dairy
+mozzarella_cheese camembert_cheese dairy
+mozzarella_cheese swiss_cheese dairy
+mozzarella_cheese blue_cheese dairy
+mozzarella_cheese cheddar_cheese dairy
+mozzarella_cheese cheese dairy
+mozzarella_cheese roquefort_cheese dairy
+mozzarella_cheese provolone_cheese dairy
+mozzarella_cheese romano_cheese dairy
+mozzarella_cheese cream_cheese dairy
+mozzarella_cheese gruyere_cheese dairy
+mozzarella_cheese parmesan_cheese dairy
+mozzarella_cheese cottage_cheese dairy
+mozzarella_cheese goat_cheese dairy
+mozzarella_cheese sheep_cheese dairy
+mozzarella_cheese emmental_cheese dairy
+mozzarella_cheese feta_cheese dairy
+mozzarella_cheese munster_cheese dairy
+swiss_cheese camembert_cheese dairy
+swiss_cheese provolone_cheese dairy
+swiss_cheese cheese dairy
+swiss_cheese sheep_cheese dairy
+swiss_cheese cream dairy
+swiss_cheese romano_cheese dairy
+swiss_cheese roquefort_cheese dairy
+swiss_cheese emmental_cheese dairy
+swiss_cheese feta_cheese dairy
+swiss_cheese parmesan_cheese dairy
+swiss_cheese cottage_cheese dairy
+swiss_cheese goat_cheese dairy
+swiss_cheese beer dairy
+swiss_cheese cream_cheese dairy
+swiss_cheese blue_cheese dairy
+swiss_cheese mozzarella_cheese dairy
+swiss_cheese munster_cheese dairy
+swiss_cheese cheddar_cheese dairy
+swiss_cheese gruyere_cheese dairy
+cream_cheese camembert_cheese dairy
+cream_cheese swiss_cheese dairy
+cream_cheese blue_cheese dairy
+cream_cheese cheddar_cheese dairy
+cream_cheese cheese dairy
+cream_cheese roquefort_cheese dairy
+cream_cheese provolone_cheese dairy
+cream_cheese romano_cheese dairy
+cream_cheese sheep_cheese dairy
+cream_cheese emmental_cheese dairy
+cream_cheese feta_cheese dairy
+cream_cheese parmesan_cheese dairy
+cream_cheese cottage_cheese dairy
+cream_cheese goat_cheese dairy
+cream_cheese mozzarella_cheese dairy
+cream_cheese munster_cheese dairy
+cream_cheese gruyere_cheese dairy
+goat_cheese camembert_cheese dairy
+goat_cheese swiss_cheese dairy
+goat_cheese blue_cheese dairy
+goat_cheese cheddar_cheese dairy
+goat_cheese cheese dairy
+goat_cheese roquefort_cheese dairy
+goat_cheese provolone_cheese dairy
+goat_cheese romano_cheese dairy
+goat_cheese cream_cheese dairy
+goat_cheese gruyere_cheese dairy
+goat_cheese parmesan_cheese dairy
+goat_cheese cottage_cheese dairy
+goat_cheese sheep_cheese dairy
+goat_cheese emmental_cheese dairy
+goat_cheese feta_cheese dairy
+goat_cheese mozzarella_cheese dairy
+goat_cheese munster_cheese dairy
+munster_cheese camembert_cheese dairy
+munster_cheese swiss_cheese dairy
+munster_cheese blue_cheese dairy
+munster_cheese cheddar_cheese dairy
+munster_cheese cheese dairy
+munster_cheese roquefort_cheese dairy
+munster_cheese provolone_cheese dairy
+munster_cheese romano_cheese dairy
+munster_cheese cream_cheese dairy
+munster_cheese gruyere_cheese dairy
+munster_cheese parmesan_cheese dairy
+munster_cheese cottage_cheese dairy
+munster_cheese goat_cheese dairy
+munster_cheese sheep_cheese dairy
+munster_cheese mozzarella_cheese dairy
+munster_cheese feta_cheese dairy
+munster_cheese emmental_cheese dairy
+gruyere_cheese camembert_cheese dairy
+gruyere_cheese swiss_cheese dairy
+gruyere_cheese blue_cheese dairy
+gruyere_cheese cheddar_cheese dairy
+gruyere_cheese cheese dairy
+gruyere_cheese roquefort_cheese dairy
+gruyere_cheese provolone_cheese dairy
+gruyere_cheese romano_cheese dairy
+gruyere_cheese beer dairy
+gruyere_cheese cream_cheese dairy
+gruyere_cheese sheep_cheese dairy
+gruyere_cheese emmental_cheese dairy
+gruyere_cheese parmesan_cheese dairy
+gruyere_cheese cottage_cheese dairy
+gruyere_cheese goat_cheese dairy
+gruyere_cheese mozzarella_cheese dairy
+gruyere_cheese munster_cheese dairy
+gruyere_cheese feta_cheese dairy
+cayenne pepper spice
+cayenne green_bell_pepper spice
+cayenne black_pepper spice
+cayenne tabasco_pepper spice
+cayenne bell_pepper spice
+cayenne thai_pepper spice
+pepper cayenne spice
+pepper thai_pepper spice
+pepper black_pepper spice
+pepper green_bell_pepper spice
+pepper tabasco_pepper spice
+pepper bell_pepper spice
+green_bell_pepper cayenne vegetable
+green_bell_pepper thai_pepper vegetable
+green_bell_pepper black_pepper vegetable
+green_bell_pepper pepper vegetable
+green_bell_pepper bell_pepper vegetable
+green_bell_pepper tabasco_pepper vegetable
+black_pepper cayenne spice
+black_pepper thai_pepper spice
+black_pepper pepper spice
+black_pepper green_bell_pepper spice
+black_pepper tabasco_pepper spice
+black_pepper bell_pepper spice
+tabasco_pepper cayenne spice
+tabasco_pepper thai_pepper spice
+tabasco_pepper black_pepper spice
+tabasco_pepper pepper spice
+tabasco_pepper bell_pepper spice
+tabasco_pepper green_bell_pepper spice
+bell_pepper cayenne vegetable
+bell_pepper thai_pepper vegetable
+bell_pepper black_pepper vegetable
+bell_pepper pepper vegetable
+bell_pepper mace vegetable
+bell_pepper green_bell_pepper vegetable
+bell_pepper tabasco_pepper vegetable
+bell_pepper black_tea vegetable
+thai_pepper cayenne spice
+thai_pepper pepper spice
+thai_pepper green_bell_pepper spice
+thai_pepper black_pepper spice
+thai_pepper tabasco_pepper spice
+thai_pepper bell_pepper spice
+geranium gardenia flower
+geranium flower flower
+geranium carnation flower
+geranium black_tea flower
+gardenia geranium flower
+gardenia carnation flower
+gardenia lavender flower
+gardenia rose flower
+gardenia flower flower
+gardenia orange_flower flower
+gardenia jasmine flower
+flower geranium flower
+flower carnation flower
+flower lavender flower
+flower rose flower
+flower gardenia flower
+flower jasmine flower
+flower orange_flower flower
+carnation geranium flower
+carnation flower flower
+carnation orange_flower flower
+carnation rose flower
+carnation jasmine flower
+carnation lavender flower
+carnation gardenia flower
+grape_brandy cognac alcoholic beverage
+melon strawberry fruit
+melon apple fruit
+melon nectarine fruit
+melon durian fruit
+nectarine melon fruit
+nectarine guava fruit
+nectarine strawberry fruit
+nectarine apple fruit
+nectarine mango fruit
+durian melon fruit
+mung_bean kidney_bean vegetable
+mung_bean red_bean vegetable
+mung_bean black_bean vegetable
+mung_bean lima_bean vegetable
+mung_bean bean vegetable
+mung_bean soybean vegetable
+mung_bean red_kidney_bean vegetable
+kidney_bean mung_bean vegetable
+kidney_bean lima_bean vegetable
+kidney_bean bean vegetable
+kidney_bean red_bean vegetable
+kidney_bean black_bean vegetable
+kidney_bean soybean vegetable
+kidney_bean red_kidney_bean vegetable
+red_bean mung_bean vegetable
+red_bean lima_bean vegetable
+red_bean bean vegetable
+red_bean kidney_bean vegetable
+red_bean black_bean vegetable
+red_bean soybean vegetable
+red_bean red_kidney_bean vegetable
+black_bean mung_bean vegetable
+black_bean lima_bean vegetable
+black_bean bean vegetable
+black_bean kidney_bean vegetable
+black_bean red_bean vegetable
+black_bean soybean vegetable
+black_bean red_kidney_bean vegetable
+lima_bean mung_bean vegetable
+lima_bean kidney_bean vegetable
+lima_bean red_bean vegetable
+lima_bean black_bean vegetable
+lima_bean bean vegetable
+lima_bean soybean vegetable
+lima_bean red_kidney_bean vegetable
+bean mung_bean vegetable
+bean lima_bean vegetable
+bean kidney_bean vegetable
+bean red_bean vegetable
+bean black_bean vegetable
+bean soybean vegetable
+bean red_kidney_bean vegetable
+red_kidney_bean mung_bean vegetable
+red_kidney_bean lima_bean vegetable
+red_kidney_bean bean vegetable
+red_kidney_bean kidney_bean vegetable
+red_kidney_bean red_bean vegetable
+red_kidney_bean black_bean vegetable
+red_kidney_bean soybean vegetable
+rice brown_rice cereal/crop
+brown_rice rice cereal/crop
+jasmine_tea coffee plant derivative
+jasmine_tea tea plant derivative
+jasmine_tea peppermint plant derivative
+jasmine_tea lemon_peel plant derivative
+jasmine_tea peppermint_oil plant derivative
+jasmine_tea black_tea plant derivative
+jasmine_tea japanese_plum plant derivative
+jasmine_tea green_tea plant derivative
+tea coffee plant derivative
+tea peppermint_oil plant derivative
+tea jasmine_tea plant derivative
+tea green_tea plant derivative
+tea peppermint plant derivative
+tea japanese_plum plant derivative
+tea black_tea plant derivative
+tea lemon_peel plant derivative
+green_tea coffee plant derivative
+green_tea vanilla plant derivative
+green_tea tea plant derivative
+green_tea peppermint plant derivative
+green_tea lemon_peel plant derivative
+green_tea jasmine_tea plant derivative
+green_tea jasmine plant derivative
+green_tea peppermint_oil plant derivative
+green_tea black_tea plant derivative
+green_tea basil plant derivative
+green_tea japanese_plum plant derivative
+okra coffee fruit
+okra soybean fruit
+okra black_tea fruit
+wood coffee plant
+popcorn coffee cereal/crop
+popcorn peanut_butter cereal/crop
+popcorn roasted_peanut cereal/crop
+squid coffee fish/seafood
+orange_flower carnation flower
+orange_flower gardenia flower
+orange_flower jasmine flower
+orange_flower flower flower
+rose carnation flower
+rose gardenia flower
+rose flower flower
+jasmine carnation flower
+jasmine gardenia flower
+jasmine flower flower
+jasmine orange_flower flower
+jasmine black_tea flower
+jasmine green_tea flower
+lavender carnation flower
+lavender gardenia flower
+lavender flower flower
+citrus orange fruit
+citrus mandarin fruit
+citrus lemon fruit
+citrus tangerine fruit
+citrus lime fruit
+mandarin citrus fruit
+mandarin orange fruit
+mandarin lemon fruit
+mandarin tangerine fruit
+mandarin lime fruit
+lemon citrus fruit
+lemon citrus_peel fruit
+lemon bergamot fruit
+lemon lemongrass fruit
+lemon mandarin fruit
+lemon lime fruit
+lemon bitter_orange fruit
+lemon tangerine fruit
+lemon orange fruit
+tangerine citrus fruit
+tangerine bergamot fruit
+tangerine strawberry fruit
+tangerine mandarin fruit
+tangerine lime fruit
+tangerine lemon fruit
+tangerine orange fruit
+lime citrus fruit
+lime mandarin fruit
+lime orange fruit
+lime tangerine fruit
+lime lemon fruit
+vegetable watercress vegetable
+watercress vegetable vegetable
+potato_chip peanut_butter vegetable
+potato_chip roasted_peanut vegetable
+potato_chip roasted_beef vegetable
+smoked_fish cod fish/seafood
+smoked_fish haddock fish/seafood
+smoked_fish mackerel fish/seafood
+smoked_fish salmon fish/seafood
+smoked_fish eel fish/seafood
+smoked_fish catfish fish/seafood
+smoked_fish tuna fish/seafood
+smoked_fish herring fish/seafood
+smoked_fish fish fish/seafood
+smoked_fish smoked_salmon fish/seafood
+cod smoked_fish fish/seafood
+cod eel fish/seafood
+cod fish fish/seafood
+cod smoked_salmon fish/seafood
+cod herring fish/seafood
+cod mackerel fish/seafood
+cod haddock fish/seafood
+cod catfish fish/seafood
+cod salmon fish/seafood
+cod tuna fish/seafood
+haddock smoked_fish fish/seafood
+haddock eel fish/seafood
+haddock fish fish/seafood
+haddock smoked_salmon fish/seafood
+haddock herring fish/seafood
+haddock mackerel fish/seafood
+haddock cod fish/seafood
+haddock salmon fish/seafood
+haddock catfish fish/seafood
+haddock tuna fish/seafood
+mackerel smoked_fish fish/seafood
+mackerel eel fish/seafood
+mackerel fish fish/seafood
+mackerel smoked_salmon fish/seafood
+mackerel herring fish/seafood
+mackerel cod fish/seafood
+mackerel haddock fish/seafood
+mackerel salmon fish/seafood
+mackerel catfish fish/seafood
+mackerel tuna fish/seafood
+salmon smoked_fish fish/seafood
+salmon eel fish/seafood
+salmon fish fish/seafood
+salmon smoked_salmon fish/seafood
+salmon herring fish/seafood
+salmon caviar fish/seafood
+salmon sturgeon_caviar fish/seafood
+salmon mackerel fish/seafood
+salmon haddock fish/seafood
+salmon catfish fish/seafood
+salmon cod fish/seafood
+salmon tuna fish/seafood
+eel smoked_fish fish/seafood
+eel fish fish/seafood
+eel mackerel fish/seafood
+eel salmon fish/seafood
+eel haddock fish/seafood
+eel catfish fish/seafood
+eel tuna fish/seafood
+eel smoked_salmon fish/seafood
+eel herring fish/seafood
+eel cod fish/seafood
+catfish smoked_fish fish/seafood
+catfish eel fish/seafood
+catfish fish fish/seafood
+catfish smoked_salmon fish/seafood
+catfish herring fish/seafood
+catfish mackerel fish/seafood
+catfish haddock fish/seafood
+catfish salmon fish/seafood
+catfish cod fish/seafood
+catfish tuna fish/seafood
+tuna smoked_fish fish/seafood
+tuna eel fish/seafood
+tuna fish fish/seafood
+tuna smoked_salmon fish/seafood
+tuna herring fish/seafood
+tuna caviar fish/seafood
+tuna sturgeon_caviar fish/seafood
+tuna mackerel fish/seafood
+tuna haddock fish/seafood
+tuna catfish fish/seafood
+tuna cod fish/seafood
+tuna salmon fish/seafood
+herring smoked_fish fish/seafood
+herring eel fish/seafood
+herring fish fish/seafood
+herring smoked_salmon fish/seafood
+herring cod fish/seafood
+herring haddock fish/seafood
+herring mackerel fish/seafood
+herring salmon fish/seafood
+herring catfish fish/seafood
+herring tuna fish/seafood
+fish smoked_fish fish/seafood
+fish eel fish/seafood
+fish cod fish/seafood
+fish haddock fish/seafood
+fish mackerel fish/seafood
+fish salmon fish/seafood
+fish catfish fish/seafood
+fish tuna fish/seafood
+fish herring fish/seafood
+fish smoked_salmon fish/seafood
+smoked_salmon smoked_fish fish/seafood
+smoked_salmon eel fish/seafood
+smoked_salmon fish fish/seafood
+smoked_salmon caviar fish/seafood
+smoked_salmon mackerel fish/seafood
+smoked_salmon sturgeon_caviar fish/seafood
+smoked_salmon salmon fish/seafood
+smoked_salmon haddock fish/seafood
+smoked_salmon catfish fish/seafood
+smoked_salmon tuna fish/seafood
+smoked_salmon herring fish/seafood
+smoked_salmon cod fish/seafood
+white_bread bread cereal/crop
+coriander mace spice
+mace coriander spice
+mace nutmeg spice
+mace bell_pepper spice
+mace ginger spice
+lovage leaf herb
+leaf lovage plant
+thyme black_tea herb
+shallot onion vegetable
+shallot roasted_beef vegetable
+shallot leek vegetable
+garlic onion vegetable
+garlic roasted_beef vegetable
+garlic leek vegetable
+chive onion vegetable
+chive leek vegetable
+citrus_peel orange plant
+citrus_peel lemon plant
+citrus_peel black_tea plant
+seed nutmeg nut/seed/pulse
+seed black_sesame_seed nut/seed/pulse
+seed rapeseed nut/seed/pulse
+black_sesame_seed nutmeg nut/seed/pulse
+black_sesame_seed seed nut/seed/pulse
+black_sesame_seed rapeseed nut/seed/pulse
+rapeseed nutmeg plant
+rapeseed black_sesame_seed plant
+rapeseed seed plant
+rosemary basil herb
+rosemary ginger herb
+basil rosemary herb
+basil black_tea herb
+basil orange herb
+basil green_tea herb
+vanilla green_tea spice
+vanilla black_tea spice
+peppermint_oil tea plant derivative
+peppermint_oil peppermint plant derivative
+peppermint_oil jasmine_tea plant derivative
+peppermint_oil green_tea plant derivative
+peppermint_oil black_tea plant derivative
+peppermint tea herb
+peppermint peppermint_oil herb
+peppermint jasmine_tea herb
+peppermint green_tea herb
+peppermint black_tea herb
+peppermint lemon_peel herb
+japanese_plum tea fruit
+japanese_plum jasmine_tea fruit
+japanese_plum black_tea fruit
+japanese_plum green_tea fruit
+lemon_peel tea plant
+lemon_peel peppermint plant
+lemon_peel jasmine_tea plant
+lemon_peel black_tea plant
+lemon_peel green_tea plant
+lemon_peel orange plant
+lemon_peel lime_peel_oil plant
+almond roasted_almond nut/seed/pulse
+roasted_almond almond nut/seed/pulse
+bergamot orange flower
+bergamot lemon flower
+bergamot tangerine flower
+lemongrass lemon herb
+honey strawberry animal product
+honey apple animal product
+bitter_orange strawberry fruit
+bitter_orange orange fruit
+bitter_orange lemon fruit
+quince strawberry fruit
+quince passion_fruit fruit
+quince apricot fruit
+quince apple fruit
+bartlett_pear strawberry fruit
+bartlett_pear pear fruit
+bartlett_pear apple fruit
+banana strawberry fruit
+banana apple fruit
+kiwi strawberry fruit
+kiwi apple fruit
+papaya strawberry fruit
+pear strawberry fruit
+pear bartlett_pear fruit
+pear apple fruit
+olive strawberry fruit
+apricot strawberry fruit
+apricot quince fruit
+apricot apple fruit
+plum strawberry fruit
+plum apple fruit
+mango strawberry fruit
+mango black_tea fruit
+mango nectarine fruit
+grapefruit orange fruit
+lime_peel_oil lemon_peel plant derivative
+sturgeon_caviar smoked_salmon fish/seafood
+sturgeon_caviar caviar fish/seafood
+sturgeon_caviar roasted_beef fish/seafood
+sturgeon_caviar salmon fish/seafood
+sturgeon_caviar tuna fish/seafood
+lingonberry black_tea fruit
+cream swiss_cheese dairy
+cream blue_cheese dairy
+cream cheddar_cheese dairy
+buttermilk blue_cheese dairy
+buttermilk cheddar_cheese dairy
+coconut coconut_oil nut/seed/pulse
+coconut_oil coconut plant derivative
+mint black_tea herb
+strawberry_jam black_tea fruit
+spearmint black_tea herb
+tomato black_tea vegetable
+clove anise spice
+hop beer cereal/crop
+malt beer cereal/crop
+butter roasted_beef dairy
+potato roasted_beef vegetable
+potato baked_potato vegetable
+egg roasted_beef animal product
+leek shallot vegetable
+leek chive vegetable
+leek garlic vegetable
+0 0 0
