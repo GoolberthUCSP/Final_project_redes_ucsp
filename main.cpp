@@ -82,7 +82,7 @@ int main(){
             perror("recvfrom");
         }
         else{
-            cout << "Received packet from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << " bytes readed: " << bytes_readed << endl;
+            cout << "Received packet type (" << recv_packet.type() <<") from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << " bytes readed: " << bytes_readed << endl;
             // Received on time (With timeout)
             thread(processing_client, client_addr, recv_packet).detach();
         }

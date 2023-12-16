@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
     while(true){
         recv_packet.clear();
         bytes_readed = recvfrom(mainFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&main_addr, (socklen_t *)&addr_len);
-        cout << "Received packet from main server" << endl;
+        cout << "Received packet type (" << recv_packet.type() << ") from main server" << endl;
         thread(processing, recv_packet).detach();
     }
 }
@@ -140,6 +140,7 @@ void create_request(vector<unsigned char> data){
     }
 
     database.addEdge(node1, node2);
+    database.printInfo();
     //Send notification of success
     send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " was created"));
 }
@@ -204,6 +205,7 @@ void update_request(vector<unsigned char> data){
 
     database.deleteEdge(node1, node2);
     database.addEdge(node1, new2);
+    database.printInfo();
     //Send notification of success
     send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " was updated to " + node1 + " -> " + new2));
 }
@@ -234,6 +236,7 @@ void delete_request(vector<unsigned char> data){
     else { // Delete one relation only
         database.deleteEdge(node1, node2);
     }
+    database.printInfo();
     //Send notification of success
     send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " was deleted"));
 }

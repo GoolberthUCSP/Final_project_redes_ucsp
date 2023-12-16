@@ -79,6 +79,7 @@ int main(){
         string usr_input;
         getline(cin, usr_input);
         cin.clear();
+        std::cout << "line: (" << usr_input << ")" << std::endl;
         // If user input is exit or quit, exit program
         if (usr_input == "exit" || usr_input == "quit"){
             system("clear || cls");

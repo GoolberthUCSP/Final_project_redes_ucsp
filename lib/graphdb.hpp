@@ -92,11 +92,12 @@ public:
     void
     printInfo()
     {
-        
+        int total = 0;
         std::cout << "#Nodes: " << adj.size() << std::endl;
         std::cout << "---------- Nodes and # of connections ----------" << std::endl;
         for (auto pair : adj)
         {
+            total += pair.second.size();
             std::cout << pair.first << ": ";
             for (auto elem : pair.second)
             {
@@ -104,7 +105,7 @@ public:
             }
             std::cout << std::endl;
         }
-
+        std::cout << "# All connections: " << total << std::endl;
     } 
 };
 
