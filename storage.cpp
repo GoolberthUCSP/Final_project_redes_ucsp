@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
     while(true){
         recv_packet.clear();
         bytes_readed = recvfrom(mainFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&main_addr, (socklen_t *)&addr_len);
-        cout << "Received packet from main server" << endl;
+        cout << MSG_RECV(recv_packet) << endl;
         thread(processing, recv_packet).detach();
     }
 }
@@ -248,16 +248,3 @@ void keep_alive(){
         sendto(keep_aliveFD, storage_nick.data(), storage_nick.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
     }
 }
-
-// Replaced by class
-/*
-string get_relations(string node){
-    // Return all relations in format: node1,node2,node3...
-    string relations;
-    set<string> &rel = database[node];
-    for (auto it : rel){
-        relations += it + ",";
-    }
-    relations = relations.substr(0, relations.size() - 1);
-    return relations;
-}*/

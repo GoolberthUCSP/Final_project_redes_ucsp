@@ -34,6 +34,8 @@
     #define USEC_TIMEOUT 0
     // CACHE_SIZE of packets
     #define ERROR(s) {perror(s); exit(1);}
-    
+    // Message recv and send macros
+    #define MSG_RECV(packet) "Received packet from " + packet.nickname() + ", with header: " + packet.header()
+    #define MSG_SEND(destiny, packet) "Sending packet to " + destiny + ", with header: " + packet.header()
     #define CACHE_SIZE 10
 #endif

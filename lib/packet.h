@@ -32,7 +32,7 @@ public:
     string nickname(){ return string(nickname_value, nickname_size-'0'); }
     vector<unsigned char> data(){ return vector<unsigned char>(data_value, data_value + SIZE - 23); }
     string data_str(){ return string(data_value, SIZE - 23); }
-    string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nickname(); }
+    string header(){ return seq_num() + "|" + hash() + "|" + type() + "|" + msg_id() + "|" + flag() + "|" + nick_size() + "|" + nickname(); }
     int data_size(){ return SIZE - 23; }
     string get_data(){ return string(data_value, 10); }
 
