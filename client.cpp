@@ -128,7 +128,7 @@ void decoding(Packet packet){
         if (packet.flag() == "0"){
             vector<unsigned char> message = incomplete_message[message_id];
             incomplete_message.erase(message_id);
-            thread(response_functions[packet.type()[0]], message).detach();
+            thread(response_functions[packet.type()], message).detach();
         }
     }
 }

@@ -26,8 +26,8 @@ map<string, ACK_controller> ack_controllers;
 void keep_alive();
 void processing_client(struct sockaddr_in client, Packet packet);
 void answer_query(struct sockaddr_in client, Packet packet);
-void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet, string destiny_nick);
-void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string destiny_nick);
+void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string type, string destiny_nick);
+
 
 string process_read_query(Packet packet);
 string process_cud_query(int storage_idx, Packet packet);
@@ -124,15 +124,11 @@ void answer_query(struct sockaddr_in client, Packet packet){
     int next_key = (key + 1) % 4;
     string next_storage_nick = to_string(next_key);
 
-    Packet notify;
-    notify.set_type("N");
-    notify.set_flag("0");
-
     if (packet.type() == "R"){
         // Result can be a notification if one of the storage servers is not available
         // If depth is 1, the query is only for the main storage server
         string result = process_read_query(packet);
-        send_message_to_one(clientFD, client, result, packet.nickname());
+        send_message_to_one(clientFD, client, result, "R", packet.nickname());
     }
     // If packet is not a read query, storage server sends only a notification
     // To do the query, it needs that the two storage servers are alive
@@ -142,43 +138,15 @@ void answer_query(struct sockaddr_in client, Packet packet){
             string notification = process_cud_query(key, packet);
             // Do the same operation with the next storage server
             process_cud_query(next_key, packet);
-            notify.set_data(notification);
             // Send only a notification to the client
-            send_packet(clientFD, client, notify, packet.nickname());
+            send_message_to_one(clientFD, client, notification, "N", packet.nickname());
         }
         else {
-            string msg = "Storage servers " + storage_nick + " and " + next_storage_nick + " are not available yet";
-            notify.set_data(format_int(msg.size(), 2) + msg);
+            string msg = notify("Storage servers " + storage_nick + " and " + next_storage_nick + " are not available yet");
             // Send notification to the client
-            send_packet(clientFD, client, notify, packet.nickname());
+            send_message_to_one(clientFD, client, msg, "N", packet.nickname());
         }
     }
-}
-
-/*
-    Send packet to the destiny
-    @param destinyFD: file descriptor of the destiny (socket)
-    @param destiny_addr: address of the destiny
-    @param packet: packet to send with TYPE, FLAG and DATA sections filled
-    @param destiny_nick: nickname of the destiny
-    @return: void
-*/
-void send_packet(int destinyFD, struct sockaddr_in destiny_addr, Packet packet, string destiny_nick){
-    
-    // Change header values
-    packet.set_seq_num(format_int(seq_number, 2));
-    packet.set_hash(calc_hash(packet.data()));
-    packet.set_msg_id(format_int(msg_id, 3));
-    packet.set_nickname("MAIN");
-
-    // Save packet into Cache if it's necesary to resend
-    ack_controllers[destiny_nick].insert_packet(seq_number, packet);
-    ack_controllers[destiny_nick].acks_to_recv.insert(packet.seq_num());
-
-    sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
-    
-    seq_number = (seq_number + 1) % 100; // Increment sequence number
-    msg_id = (msg_id + 1) % 1000; // Increment message id: FROM STORAGE DON'T CHANGE THE MSG_ID OF THE PACKET;
 }
 
 void keep_alive(){
@@ -227,9 +195,11 @@ void keep_alive(){
     @return: notification from the storage server
 */
 string process_cud_query(int storage_idx, Packet packet){
+    vector<unsigned char> data_vec = packet.data();
+    string data_str(data_vec.begin(), data_vec.end());
     string storage_nick = to_string(storage_idx);
     Packet result;
-    send_packet(storageFD[storage_idx], storage_addr[storage_idx], packet, storage_nick);
+    send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, packet.type(), packet.nickname());
     // Do loop while the server answers with its 
     do{
         result.clear();
@@ -256,7 +226,7 @@ string process_cud_query(int storage_idx, Packet packet){
             // If packet isn't good, wait one more time; change the type of the packet so as not to get out of the loop
             result.set_type("A");
         }
-    } while(result.type() != "A" && result.flag() != "0");
+    } while(result.type() != "A");
     
     vector <unsigned char> data = result.data(); // data: 00notification-----...
     int data_size = stoi(string(data.begin(), data.begin()+2)) + 2;
@@ -279,9 +249,9 @@ string process_read_query(Packet packet){
     @param destiny_nick: nickname of the destiny
     @return: void
 */
-void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string destiny_nick){
+void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string type, string destiny_nick){
     Packet packet;
-    packet.set_type("R");
+    packet.set_type(type);
     packet.set_seq_num(format_int(seq_number, 2));
     packet.set_msg_id(format_int(msg_id, 3));
     packet.set_nickname(destiny_nick);

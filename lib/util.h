@@ -51,6 +51,14 @@ string format_int(int num, int size){
     return output.str();
 }
 
+/*
+    Format string data to notification format
+    @param data : data to format
+    @return string in format 00data, 00 = size of data
+*/
+string notify(string data){
+    return format_int(data.size(), 2) + data;
+}
 
 
 #endif

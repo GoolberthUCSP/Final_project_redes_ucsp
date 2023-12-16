@@ -45,7 +45,7 @@ void ACK_controller::process_ack(string seq_num){
 void ACK_controller::replay_ack(string seq_num){
     ack_packet.set_seq_num(seq_num);
 
-    sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
+    sendto(originFD, &ack_packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
 }
 
 void ACK_controller::resend_packet(string seq_num){
