@@ -4,4 +4,4 @@
 - probar todo hasta ahora (debugeo)
 - cambiar doc
 - read requests
-- jalar el curso
+- Aprobar el curso con 20
