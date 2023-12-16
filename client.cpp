@@ -101,6 +101,7 @@ void thread_receiver(){
     while(true){
         recv_packet.clear();
         bytes_readed = recvfrom(serverFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&server_addr, (socklen_t *)&addr_len);
+        cout << MSG_RECV(recv_packet) << endl;
         thread(decoding, recv_packet).detach();
     }   
 }
