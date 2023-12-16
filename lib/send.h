@@ -21,7 +21,6 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     int remaining_size = data.size();
     int packets_sent = 0;
     int seq_num = stoi(packet.seq_num());
-
     stringstream ss;
     ss.write((char *)data.data(), data.size());
     string fragment(packet_data_size, 0);
@@ -69,6 +68,6 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     packet.set_hash(calc_hash(packet.data()));
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_num, packet);
-
-    sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
+    int bytes_sent = sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
+    cout << "Sent packet to " << inet_ntoa(destiny_addr.sin_addr) << ":" << ntohs(destiny_addr.sin_port) << " bytes sent: " << bytes_sent << endl;
 }

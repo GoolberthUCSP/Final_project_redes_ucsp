@@ -34,6 +34,7 @@ public:
     string data_str(){ return string(data_value, SIZE - 23); }
     string header(){ return seq_num() + hash() + type() + msg_id() + flag() + nick_size() + nickname(); }
     int data_size(){ return SIZE - 23; }
+    string get_data(){ return string(data_value, 10); }
 
     // Setters
     void set_seq_num(string seq_num){ copy(seq_num.begin(), seq_num.end(), seq_number); }
@@ -48,18 +49,18 @@ public:
     }
     void set_data(vector<unsigned char> data){ 
         clear_data();
-        copy(data.begin(), data.end(), data_value); 
+        copy(data.begin(), data.begin() + data_size(), data_value); 
     }
     void set_data(string data){ 
         clear_data();
-        copy(data.begin(), data.end(), data_value); 
+        copy(data.begin(), data.begin() + data_size(), data_value); 
     }
     void set_header(string header){ copy(header.begin(), header.end(), seq_number); }
 
     void clear(){ memset(this, '-', SIZE); }
-    void clear_data(){ memset(data_value, '-', SIZE - 23); }
+    void clear_data(){ memset(data_value, '-', data_size()); }
     void print(){
-        cout << seq_num() << "|" << hash() << "|" << type() << "|" << msg_id() << "|" << flag() << "|" << nick_size() << "|" << nickname() << endl;
+        cout << seq_num() << "|" << hash() << "|" << type() << "|" << msg_id() << "|" << flag() << "|" << nick_size() << "|" << nickname() << "|" << get_data() << endl;
         //cout << "data: " << data_str() << endl;
     }
 

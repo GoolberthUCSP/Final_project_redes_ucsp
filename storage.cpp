@@ -67,12 +67,15 @@ int main(int argc, char *argv[]){
 
     thread(keep_alive).detach();
 
+    // Send first message to main server
+    sendto(mainFD, "0", 1, MSG_CONFIRM, (struct sockaddr *)&main_addr, sizeof(main_addr));
+
 	cout << "Storage server connected to main server on port " << port << "..." << endl;
     
     while(true){
         recv_packet.clear();
         bytes_readed = recvfrom(mainFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&main_addr, (socklen_t *)&addr_len);
-        cout << "Received " << bytes_readed << " bytes" << endl;
+        cout << "Received packet from main server" << endl;
         thread(processing, recv_packet).detach();
     }
 }

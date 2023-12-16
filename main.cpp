@@ -14,6 +14,7 @@ struct timeval tv;
 
 // Storages
 bool is_alive[4]{0}; // all storages start in death state
+struct sockaddr_in storage_keep_alive_addr[4], storage_keep_alive_conn;
 struct sockaddr_in storage_addr[4], storage_conn;
 int storageFD[4];
 int storage_port[4] = {5001, 5002, 5003, 5004};
@@ -81,6 +82,7 @@ int main(){
             perror("recvfrom");
         }
         else{
+            cout << "Received packet from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << " bytes readed: " << bytes_readed << endl;
             // Received on time (With timeout)
             thread(processing_client, client_addr, recv_packet).detach();
         }
@@ -118,7 +120,7 @@ void processing_client(struct sockaddr_in client, Packet packet){
 
 void answer_query(struct sockaddr_in client, Packet packet){
     // Key and nickname of the main storage server
-    int key = (packet.data()[2] % 4); //= first character of the first node. Every client data request begin with: 00node...
+    int key = packet.data()[2] % 4; //= first character of the first node. Every client data request begin with: 00node...
     string storage_nick = to_string(key);
     // Key and nickname of the next storage server (duplicated data)
     int next_key = (key + 1) % 4;
@@ -133,7 +135,7 @@ void answer_query(struct sockaddr_in client, Packet packet){
     // If packet is not a read query, storage server sends only a notification
     // To do the query, it needs that the two storage servers are alive
     else {
-        if (is_alive[key] && is_alive[next_key]){
+        if (is_alive[key] || is_alive[next_key]){
             // Do the query to the main storage server
             string notification = process_cud_query(key, packet);
             // Do the same operation with the next storage server
@@ -153,19 +155,28 @@ void keep_alive(){
     struct timeval start, end, elapsed;
     string msg(1, '0');
     int num;
+
+    for (int i = 0; i < 4; i++){
+        thread([i](){
+            string ans(1, '0');
+            recvfrom(storageFD[i], ans.data(), ans.size(), MSG_WAITALL, (struct sockaddr *)&storage_conn, (socklen_t *)&addr_len);
+            storage_addr[i] = storage_conn;
+            cout << "Storage" << i << " is connected" << endl;
+        }).detach();
+    }
+
     while (true){
         for (int i = 0; i < 4; i++){
             if (is_alive[i])
-                sendto(keep_aliveFD, msg.data(), msg.size(), MSG_CONFIRM, (struct sockaddr *)&storage_addr[i], sizeof(struct sockaddr));
-            
+                sendto(keep_aliveFD, msg.data(), msg.size(), MSG_CONFIRM, (struct sockaddr *)&storage_keep_alive_addr[i], sizeof(struct sockaddr));
+        
             gettimeofday(&start, NULL);
             // Storage answers sending its index
-            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_conn, (socklen_t *)&addr_len);
+            num = recvfrom(keep_aliveFD, msg.data(), msg.size(), MSG_WAITALL, (struct sockaddr *)&storage_keep_alive_conn, (socklen_t *)&addr_len);
             if (num == -1){
                 // Timeout
                 if (errno == EAGAIN || errno == EWOULDBLOCK){
                     is_alive[i] = false;
-                    cout << "Storage" << i << " is not alive" << endl;
                 }
                 else 
                     perror("recvfrom");
@@ -179,7 +190,7 @@ void keep_alive(){
                 timersub(&end, &start, &elapsed);
                 int uremaining = (tv.tv_sec - elapsed.tv_sec) * 1000000 + (tv.tv_usec - elapsed.tv_usec);
                 is_alive[storage_idx] = true;
-                storage_addr[storage_idx] = storage_conn;
+                storage_keep_alive_addr[storage_idx] = storage_keep_alive_conn;
                 // Sleep for remaining time
                 if (uremaining > 0)
                     usleep(uremaining);
@@ -203,8 +214,8 @@ string process_cud_query(int storage_idx, Packet packet){
     // Do loop while the server answers with its 
     do{
         result.clear();
-        recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
-        
+        int bytes_readed = recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
+        cout << "Received packet from storage " << storage_idx << endl;
         // If it's the response of the server's first query.
         if (ack_controllers.find(storage_nick) == ack_controllers.end()){
             ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);
@@ -254,7 +265,7 @@ void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string 
     packet.set_type(type);
     packet.set_seq_num(format_int(seq_number, 2));
     packet.set_msg_id(format_int(msg_id, 3));
-    packet.set_nickname(destiny_nick);
+    packet.set_nickname("MAIN");
 
     int packets_sent = send_message(destinyFD, destiny_addr, ack_controllers[destiny_nick], data, packet);
 
