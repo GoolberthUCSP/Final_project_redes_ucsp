@@ -1,6 +1,6 @@
 #include "lib/macros.h"
 #include "lib/ack.h"
-#include "graphdb.hpp"
+#include "lib/graphdb.hpp"
 
 using namespace std;
 
