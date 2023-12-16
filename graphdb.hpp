@@ -9,6 +9,9 @@
 #include <utility>
 using Edge = std::pair<std::string, std::string>;
 
+std::vector<std::string> edgeListToString (std::vector<Edge> list, int packet_data_size);
+std::vector<Edge> stringToEdgeList (std::string data);
+
 class GraphDB {
     
     std::unordered_map<std::string, std::unordered_set<std::string> > adj;
@@ -24,6 +27,12 @@ public:
     deleteEdge(std::string const& from, std::string const& to)
     {
         adj[from].erase(to);
+    }
+
+    void
+    deleteNode(std::string const& a)
+    {
+        adj.erase(a);
     }
     
     void
@@ -44,11 +53,33 @@ public:
         return edges;
     }
 
+    //Returns a vector of strings, each one containing the result of read request.
+    //Only 1 string if it fits in one packet, otherwise split in multiple strings
+    //for multiple packets
+    std::vector<std::string>
+    getEdgesAsString(std::string const& from, int packet_data_size, int recursive = 1)
+    {
+        std::vector<Edge> edges = getEdges(from, recursive);
+        return edgeListToString(edges, packet_data_size);
+    }
+
     int
     size()
     {
         return adj.size();
     }
+
+    bool
+    hasRelation(std::string a, std::string b)
+    {
+        return (adj[a].find(b) != adj[a].end());
+    }
+
+    bool
+    exists(std::string a)
+    {
+        return (adj.find(a) != adj.end());
+    } 
 };
 
 // Return a vector of data strings of type response

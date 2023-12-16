@@ -1,5 +1,6 @@
 #include "lib/macros.h"
 #include "lib/ack.h"
+#include "graphdb.hpp"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ string storage_nick;
 int addr_len= sizeof(struct sockaddr_in);
 
 ACK_controller ack_controller;
-map<string, set<string>> database; // database["node"]: {nodes that are connected to "node"}
+GraphDB database; // database["node"]: {nodes that are connected to "node"}
 vector<int> storage_ports= {5001, 5002, 5003, 5004};
 
 // CRUD request functions
@@ -27,7 +28,6 @@ void send_message(string type, string data);
 void send_packet(Packet packet); // flag (0=last packet, 1=not last packet)
 
 void keep_alive();
-string get_relations(string node);
 
 typedef void (*func_ptr)(vector<unsigned char>);
 map<string, func_ptr> crud_requests({
@@ -162,16 +162,17 @@ void create_request(vector<unsigned char> data){
     string node2(stoi(size2), 0);
     ss.read(node2.data(), node2.size());
     
-    if (database[node1].find(node2) != database[node1].end()){
+    if (database.hasRelation(node1, node2)){
         // Send notification of failure: relation(node1->node2) already exists
         send_message("N", "The relation " + node1 + " -> " + node2 + " already exists");
         return;
     }
 
-    database[node1].insert(node2);
+    database.addEdge(node1, node2);
     //Send notification of success
     send_message("N", "The relation " + node1 + " -> " + node2 + " was created");
 }
+
 void read_request(vector<unsigned char> data){
     // data : 00node
     stringstream ss;
@@ -182,17 +183,28 @@ void read_request(vector<unsigned char> data){
     string node(stoi(size), 0);
     ss.read(node.data(), node.size());
     
-    if (database.find(node) == database.end()){
+    if (!database.exists(node)){
         // Send notification of failure: node doesn't exist
         send_message("N", "The node doesn't exist");
         return;
     }
     //Return response to primary server
-    string result = get_relations(node);
-    string size_res = format_int(result.size(), 3);
-    result = size_res + result;
-    // Send response
-    send_message("R", result);
+
+    vector<string> result = database.getEdgesAsString(node, 1000);
+    // If response can fit in 1 packet
+    if (result.size() == 1)
+    {
+        string res = result[0];
+        string size_res = format_int(res.size(), 3);
+        res = size_res + res;
+        // Send response
+        send_message("R", res);
+    }
+    // Response has to be split in multiple packets
+    else
+    {
+        // to implement .....
+    }
 }
 
 void update_request(vector<unsigned char> data){
@@ -213,14 +225,14 @@ void update_request(vector<unsigned char> data){
     string new2(stoi(size3), 0);
     ss.read(new2.data(), new2.size());
 
-    if (database.find(node1) == database.end()){
+    if (!database.exists(node1)){
         // Send notification of failure: node1 doesn't exist
         send_message("N", "The node " + node1 + " doesn't exist");
         return;
     }
 
-    database[node1].erase(node2);
-    database[node1].insert(new2);
+    database.deleteEdge(node1, node2);
+    database.addEdge(node1, new2);
     //Send notification of success
     send_message("N", "The relation " + node1 + " -> " + node2 + " was updated to " + node1 + " -> " + new2);
 }
@@ -239,17 +251,17 @@ void delete_request(vector<unsigned char> data){
     string node2(stoi(size2), 0);
     ss.read(node2.data(), node2.size());
     
-    if (database.find(node1) == database.end()){
+    if (!database.exists(node1)){
         // Send notification of failure: node1 doesn't exist
         send_message("N", "The node " + node1 + " doesn't exist");
         return;
     }
 
     if (node2 == "*"){ // Delete all relations
-        database.erase(node1);
+        database.deleteNode(node1);
     }
     else { // Delete one relation only
-        database[node1].erase(node2);
+        database.deleteEdge(node1, node2);
     }
     //Send notification of success
     send_message("N", "The relation " + node1 + " -> " + node2 + " was deleted");
@@ -266,6 +278,8 @@ void keep_alive(){
     }
 }
 
+// Replaced by class
+/*
 string get_relations(string node){
     // Return all relations in format: node1,node2,node3...
     string relations;
@@ -275,4 +289,4 @@ string get_relations(string node){
     }
     relations = relations.substr(0, relations.size() - 1);
     return relations;
-}
+}*/
