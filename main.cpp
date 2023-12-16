@@ -74,7 +74,18 @@ int main(){
         //if (setsockopt(storageFD[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0)    ERROR("setsockopt")
     }
 
+    // Receive first message from storage servers to identify their address
+    for (int i = 0; i < 4; i++){
+        thread([i](){
+            string ans(1, '0');
+            recvfrom(storageFD[i], ans.data(), ans.size(), MSG_WAITALL, (struct sockaddr *)&storage_conn, (socklen_t *)&addr_len);
+            storage_addr[i] = storage_conn;
+            cout << "Storage" << i << " is connected" << endl;
+        }).detach();
+    }
+
     thread(keep_alive).detach();
+    
     while(true){
         recv_packet.clear();
         int bytes_readed = recvfrom(clientFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
@@ -82,7 +93,7 @@ int main(){
             perror("recvfrom");
         }
         else{
-            cout << "Received packet from " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) << " bytes readed: " << bytes_readed << endl;
+            cout << MSG_RECV(recv_packet) << endl;
             // Received on time (With timeout)
             thread(processing_client, client_addr, recv_packet).detach();
         }
@@ -122,7 +133,7 @@ void answer_query(struct sockaddr_in client, Packet packet){
     // Key and nickname of the main storage server
     int key = packet.data()[2] % 4; //= first character of the first node. Every client data request begin with: 00node...
     string storage_nick = to_string(key);
-    // Key and nickname of the next storage server (duplicated data)
+    // Key and nickname of the next storage server = redundant
     int next_key = (key + 1) % 4;
     string next_storage_nick = to_string(next_key);
 
@@ -135,19 +146,25 @@ void answer_query(struct sockaddr_in client, Packet packet){
     // If packet is not a read query, storage server sends only a notification
     // To do the query, it needs that the two storage servers are alive
     else {
-        if (is_alive[key] || is_alive[next_key]){
-            // Do the query to the main storage server
-            string notification = process_cud_query(key, packet);
-            // Do the same operation with the next storage server
-            process_cud_query(next_key, packet);
-            // Send only a notification to the client
-            send_message_to_one(clientFD, client, notification, "N", packet.nickname());
-        }
-        else {
-            string msg = notify("Storage servers " + storage_nick + " and " + next_storage_nick + " are not available yet");
+        // If no one is alive, send a notification of failure
+        if (!is_alive[key] && !is_alive[next_key]){
+            string msg = notify("Operation failed: Storage servers " + storage_nick + " and " + next_storage_nick + " are not available");
             // Send notification to the client
             send_message_to_one(clientFD, client, msg, "N", packet.nickname());
+            return;
         }
+        string notification;
+        if (is_alive[key]){
+            // Do the query to the main storage server
+            notification = process_cud_query(key, packet);
+            
+        }
+        if (is_alive[next_key]){ 
+            // Do the same operation with the next storage server
+            notification = process_cud_query(next_key, packet);
+            // Send only a notification to the client
+        }
+        send_message_to_one(clientFD, client, notification, "N", packet.nickname());
     }
 }
 
@@ -155,15 +172,6 @@ void keep_alive(){
     struct timeval start, end, elapsed;
     string msg(1, '0');
     int num;
-
-    for (int i = 0; i < 4; i++){
-        thread([i](){
-            string ans(1, '0');
-            recvfrom(storageFD[i], ans.data(), ans.size(), MSG_WAITALL, (struct sockaddr *)&storage_conn, (socklen_t *)&addr_len);
-            storage_addr[i] = storage_conn;
-            cout << "Storage" << i << " is connected" << endl;
-        }).detach();
-    }
 
     while (true){
         for (int i = 0; i < 4; i++){
@@ -215,7 +223,7 @@ string process_cud_query(int storage_idx, Packet packet){
     do{
         result.clear();
         int bytes_readed = recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
-        cout << "Received packet from storage " << storage_idx << endl;
+        cout << MSG_RECV(result) << endl;
         // If it's the response of the server's first query.
         if (ack_controllers.find(storage_nick) == ack_controllers.end()){
             ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);
@@ -229,7 +237,7 @@ string process_cud_query(int storage_idx, Packet packet){
     // If packet is not corrupted send one ACK, else send one more ACK
         // Calc hash only to data, without header
         string seq_num = result.seq_num();
-        bool is_good= (result.hash() == calc_hash(packet.data()))? true : false;
+        bool is_good= (result.hash() == calc_hash(result.data()))? true : false;
         ack_controllers[storage_nick].replay_ack(seq_num);
         // If packet is corrupted, send one more ACK
         if (!is_good){
