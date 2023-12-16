@@ -245,7 +245,7 @@ string process_cud_query(int storage_idx, Packet packet){
             // If packet isn't good, wait one more time; change the type of the packet so as not to get out of the loop
             result.set_type("A");
         }
-    } while(result.type() != "A");
+    } while(result.type() == "A");
     
     vector <unsigned char> data = result.data(); // data: 00notification-----...
     int data_size = stoi(string(data.begin(), data.begin()+2)) + 2;
