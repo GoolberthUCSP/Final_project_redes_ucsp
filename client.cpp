@@ -79,6 +79,7 @@ int main(){
         string usr_input;
         getline(cin, usr_input);
         cin.clear();
+        usleep(50000);
         // If user input is exit or quit, exit program
         if (usr_input == "exit" || usr_input == "quit"){
             system("clear || cls");
@@ -87,7 +88,7 @@ int main(){
         // If user input is clear or cls, clear screen
         else if (usr_input == "clear" || usr_input == "cls"){
             system("clear || cls");
-        } 
+        }
         // If user input is CRUD request
         else{
             thread(encoding, usr_input).detach();
@@ -101,7 +102,6 @@ void thread_receiver(){
     while(true){
         recv_packet.clear();
         bytes_readed = recvfrom(serverFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&server_addr, (socklen_t *)&addr_len);
-        cout << MSG_RECV(recv_packet) << endl;
         thread(decoding, recv_packet).detach();
     }   
 }

@@ -18,6 +18,7 @@ struct sockaddr_in storage_keep_alive_addr[4], storage_keep_alive_conn;
 struct sockaddr_in storage_addr[4], storage_conn;
 int storageFD[4];
 int storage_port[4] = {5001, 5002, 5003, 5004};
+mutex storage_mtx[4];
 //Only for receiving read responses from storages
 vector<map<string, vector<unsigned char>>> incomplete_message(4); // msg_id, data
 
@@ -157,13 +158,12 @@ void answer_query(struct sockaddr_in client, Packet packet){
         if (is_alive[key]){
             // Do the query to the main storage server
             notification = process_cud_query(key, packet);
-            
         }
         if (is_alive[next_key]){ 
             // Do the same operation with the next storage server
             notification = process_cud_query(next_key, packet);
-            // Send only a notification to the client
         }
+        // Send only a notification to the client
         send_message_to_one(clientFD, client, notification, "N", packet.nickname());
     }
 }
@@ -214,6 +214,8 @@ void keep_alive(){
     @return: notification from the storage server
 */
 string process_cud_query(int storage_idx, Packet packet){
+
+    storage_mtx[storage_idx].lock();
     vector<unsigned char> data_vec = packet.data();
     string data_str(data_vec.begin(), data_vec.end());
     string storage_nick = to_string(storage_idx);
@@ -249,6 +251,8 @@ string process_cud_query(int storage_idx, Packet packet){
     
     vector <unsigned char> data = result.data(); // data: 00notification-----...
     int data_size = stoi(string(data.begin(), data.begin()+2)) + 2;
+    
+    storage_mtx[storage_idx].unlock();
     return string(data.begin(), data.begin() + data_size);
 }
 
