@@ -17,24 +17,28 @@ class GraphDB {
     std::unordered_map<std::string, std::unordered_set<std::string> > adj;
     
 public:
+    //Create connection between from and to
     void
     addEdge(std::string const& from, std::string const& to)
     {
         adj[from].insert(to);
     }
     
+    //Delete connection between from and to
     void
     deleteEdge(std::string const& from, std::string const& to)
     {
         adj[from].erase(to);
     }
 
+    //Delete all connections node a currently has
     void
     deleteNode(std::string const& a)
     {
         adj.erase(a);
     }
     
+    //Update connection of from to old_to to from to new_to
     void
     updateEdge(std::string const& from, std::string const& old_to, std::string const& new_to)
     {
@@ -63,22 +67,45 @@ public:
         return edgeListToString(edges, packet_data_size);
     }
 
+    //Number of nodes in the database
     int
     size()
     {
         return adj.size();
     }
 
+    //Check if a is connected to b
     bool
     hasRelation(std::string a, std::string b)
     {
         return (adj[a].find(b) != adj[a].end());
     }
 
+    //Check if node a exists in the database
     bool
     exists(std::string a)
     {
         return (adj.find(a) != adj.end());
+    }
+
+    //Print information about the database
+    void
+    printInfo()
+    {
+        int total = 0;
+        std::cout << "#Nodes: " << adj.size() << std::endl;
+        std::cout << "---------- Nodes and # of connections ----------" << std::endl;
+        for (auto pair : adj)
+        {
+            total += pair.second.size();
+            std::cout << pair.first << ": ";
+            for (auto elem : pair.second)
+            {
+                std::cout << elem << ", ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << "# All connections: " << total << std::endl;
     } 
 };
 
