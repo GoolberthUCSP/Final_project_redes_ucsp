@@ -1,6 +1,7 @@
 #include "lib/macros.h"
 #include "lib/ack.h"
 #include "lib/graphdb.hpp"
+#include "lib/send.h"
 
 using namespace std;
 
@@ -24,8 +25,7 @@ void update_request(vector<unsigned char> data);
 void delete_request(vector<unsigned char> data);
 
 void processing(Packet packet);
-void send_message(string type, string data);
-void send_packet(Packet packet); // flag (0=last packet, 1=not last packet)
+void send_message_to_server(string type, string data);
 
 void keep_alive();
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
 
     thread(keep_alive).detach();
 
-	cout << "UDPServer connected to main server on port " << port << "..." << endl;
+	cout << "Storage server connected to main server on port " << port << "..." << endl;
     
     while(true){
         recv_packet.clear();
@@ -101,50 +101,18 @@ void processing(Packet packet){
         thread(crud_requests[packet.type()], data).detach();
 }
 
-void send_message(string type, string data){
+void send_message_to_server(string type, string data){
     Packet packet;
-    packet.set_type(type);
+    // Set packet header
+    packet.set_seq_num(format_int(seq_number, 2));
     packet.set_msg_id(format_int(msg_id, 3));
+    packet.set_type(type);
     packet.set_nickname(storage_nick);
 
-    int packet_data_size = packet.data_size();
-    int remaining_size = data.size();
+    int packets_sent = send_message(mainFD, main_addr, ack_controller, data, packet);
 
-    stringstream ss;
-    ss.write((char *)data.data(), data.size());
-    string fragment(packet_data_size, 0);
-    // Send message in fragmented packets if it's too big
-    while (remaining_size > packet_data_size){
-        // Send full packets
-        ss.read(fragment.data(), packet_data_size);
-        remaining_size -= packet_data_size;
-        packet.set_data(fragment);
-        packet.set_flag("1");
-        send_packet(packet);
-    }
-    // Send last packet
-    fragment.resize(remaining_size);
-    ss.read(fragment.data(), remaining_size);
-    
-    packet.set_data(fragment);
-    packet.set_flag("0");
-    send_packet(packet);
+    seq_number = (seq_number + packets_sent) % 100; // Increment sequence number
     msg_id = (msg_id + 1) % 1000; // Increment message id
-}
-
-void send_packet(Packet packet){
-    string seq_num = format_int(seq_number, 2);
-
-    packet.set_seq_num(seq_num);
-    packet.set_hash(calc_hash(packet.data()));
-
-    // Save packet into Cache if it's necesary to resend
-    ack_controller.insert_packet(seq_number, packet);
-    ack_controller.acks_to_recv.insert(seq_num);
-
-
-    sendto(mainFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&main_addr, sizeof(struct sockaddr));
-    seq_number = (seq_number + 1) % 100; // Increment sequence number
 }
 
 // CRUD functions
@@ -164,13 +132,13 @@ void create_request(vector<unsigned char> data){
     
     if (database.hasRelation(node1, node2)){
         // Send notification of failure: relation(node1->node2) already exists
-        send_message("N", "The relation " + node1 + " -> " + node2 + " already exists");
+        send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " already exists"));
         return;
     }
 
     database.addEdge(node1, node2);
     //Send notification of success
-    send_message("N", "The relation " + node1 + " -> " + node2 + " was created");
+    send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " was created"));
 }
 
 void read_request(vector<unsigned char> data){
@@ -185,11 +153,11 @@ void read_request(vector<unsigned char> data){
     
     if (!database.exists(node)){
         // Send notification of failure: node doesn't exist
-        send_message("N", "The node doesn't exist");
+        send_message_to_server("N", notify("The node doesn't exist"));
         return;
     }
+  
     //Return response to primary server
-
     vector<string> result = database.getEdgesAsString(node, 1000);
     // If response can fit in 1 packet
     if (result.size() == 1)
@@ -227,14 +195,14 @@ void update_request(vector<unsigned char> data){
 
     if (!database.exists(node1)){
         // Send notification of failure: node1 doesn't exist
-        send_message("N", "The node " + node1 + " doesn't exist");
+        send_message_to_server("N", notify("The node " + node1 + " doesn't exist"));
         return;
     }
 
     database.deleteEdge(node1, node2);
     database.addEdge(node1, new2);
     //Send notification of success
-    send_message("N", "The relation " + node1 + " -> " + node2 + " was updated to " + node1 + " -> " + new2);
+    send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " was updated to " + node1 + " -> " + new2));
 }
 
 void delete_request(vector<unsigned char> data){
@@ -253,7 +221,7 @@ void delete_request(vector<unsigned char> data){
     
     if (!database.exists(node1)){
         // Send notification of failure: node1 doesn't exist
-        send_message("N", "The node " + node1 + " doesn't exist");
+        send_message_to_server("N", notify("The node " + node1 + " doesn't exist"));
         return;
     }
 
@@ -264,13 +232,13 @@ void delete_request(vector<unsigned char> data){
         database.deleteEdge(node1, node2);
     }
     //Send notification of success
-    send_message("N", "The relation " + node1 + " -> " + node2 + " was deleted");
+    send_message_to_server("N", notify("The relation " + node1 + " -> " + node2 + " was deleted"));
 }
 
 void keep_alive(){
     int num;
     string data(1, 0);
-    // Send first message to identify this storage in main server
+    // Send first message to identify this storage addr in main server
     sendto(keep_aliveFD, storage_nick.data(), storage_nick.size(), MSG_CONFIRM, (struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr));
     while(true){
         num = recvfrom(keep_aliveFD, data.data(), data.size(), MSG_WAITALL, (struct sockaddr *)&keep_alive_addr, (socklen_t *)&addr_len);

@@ -29,7 +29,11 @@ struct ACK_controller{
     void resend_packet(string seq_num);
     void insert_packet(int seq_num, Packet packet);
 };
-
+/*
+    Process ACK: If the ack is not in the set of acks to receive = it is the second ACK, resend the packet from the Cache
+    @param seq_num: sequence number of the ack
+    @return void
+*/
 void ACK_controller::process_ack(string seq_num){
     // If the ack is not in the set = it is the second ACK, resend the packet
     if (acks_to_recv.find(seq_num) == acks_to_recv.end())
@@ -41,20 +45,25 @@ void ACK_controller::process_ack(string seq_num){
 void ACK_controller::replay_ack(string seq_num){
     ack_packet.set_seq_num(seq_num);
 
-    sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
+    sendto(originFD, &ack_packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
 }
 
 void ACK_controller::resend_packet(string seq_num){
     Packet packet = packets.get(stoi(seq_num));
     sendto(originFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&origin_addr, sizeof(struct sockaddr));
-    // Add ack to the set
-    acks_to_recv.insert(seq_num);
     // Add packet to the Cache
-    packets.insert(stoi(seq_num), packet);
+    insert_packet(stoi(seq_num), packet);
 }
 
+/*
+    Insert packet in the Cache and in the set of acks to receive
+    @param seq_num: sequence number of the packet
+    @param packet: packet to insert
+    @return void
+*/
 void ACK_controller::insert_packet(int seq_num, Packet packet){
     packets.insert(seq_num, packet);
+    acks_to_recv.insert(format_int(seq_num, 2));
 }
 
 #endif
