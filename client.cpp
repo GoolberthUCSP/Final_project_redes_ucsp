@@ -282,8 +282,11 @@ void delete_request(stringstream &ss){
     @param data: formatted data (00node000node1,node2,etc. 00 = size of node, 000 = size of nodes)
     @return void
 */
-void read_response(stringstream &ss){
+void read_response(vector<unsigned char> data){
     // ss : 00node000node1,node2,etc
+    stringstream ss;
+    ss.write((char *)data.data(), data.size());
+
     string node_size(2, 0), nodes_size(3, 0);
 
     ss.read(node_size.data(), node_size.size());
@@ -303,8 +306,11 @@ void read_response(stringstream &ss){
     @param data: formatted data (00notification, 00 = size of data)
     @return void
 */
-void recv_notification(stringstream &ss){
+void recv_notification(vector<unsigned char> data){
     // ss : 00notification
+    stringstream ss;
+    ss.write((char *)data.data(), data.size());
+    
     string size(2, 0);
 
     ss.read(size.data(), size.size());

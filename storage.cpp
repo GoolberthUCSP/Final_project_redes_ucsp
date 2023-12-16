@@ -166,7 +166,7 @@ void read_request(vector<unsigned char> data){
         string size_res = format_int(res.size(), 3);
         res = size_res + res;
         // Send response
-        send_message("R", res);
+        send_message_to_server("R", res);
     }
     // Response has to be split in multiple packets
     else
