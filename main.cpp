@@ -253,14 +253,101 @@ string process_cud_query(int storage_idx, Packet packet){
 }
 
 /*
+    Get the read query
+    @param storage_idx: index of the storage server
+    @param node: node to check connections in the server
+    @param nickname: nickname of client
+    @return: edges with the node as the first element
+*/
+string get_read_query(int storage_idx, string node, string nickname) {
+    string data_str = format_int(node.size(), 2) + node + "1";
+    string storage_nick = to_string(storage_idx);
+    send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, "R", nickname);
+    
+    Packet result;
+    // Do loop while the server answers with its 
+    do{
+        result.clear();
+        int bytes_readed = recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
+        cout << MSG_RECV(storage_addr[storage_idx], result) << endl;
+        // If it's the response of the server's first query.
+        if (ack_controllers.find(storage_nick) == ack_controllers.end()){
+            ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);
+        }
+
+        if (result.packet_type() == "A"){
+            ack_controllers[storage_nick].process_ack(result.seq_num());
+            continue;
+        }
+
+        // If packet is not corrupted send one ACK, else send one more ACK
+        // Calc hash only to data, without header
+        string seq_num = result.seq_num();
+        bool is_good= (result.hash() == calc_hash(result.data<vector<unsigned char>>()))? true : false;
+        ack_controllers[storage_nick].replay_ack(seq_num);
+        // If packet is corrupted, send one more ACK
+        if (!is_good){
+            ack_controllers[storage_nick].replay_ack(seq_num);
+            // If packet isn't good, wait one more time; change the type of the packet so as not to get out of the loop
+            result.set_data_type("A");
+        }
+    } while(result.data_type() == "A");
+    
+    vector<unsigned char> data = result.data<vector<unsigned char>>(); 
+    int data_size = stoi(string(data.begin(), data.begin()+2));
+    
+    return string(data.begin() + 2, data.begin() + 2 + data_size);
+}
+
+/*
     Process general read query: recursive and simple read
+    @param storage_idx: index of the storage server
     @param packet: packet to send to the storage server
     @return: result of the recursive or simple read   
 */
-string process_read_query(Packet packet){
+string process_read_query(int storage_idx, Packet packet) {
+    storage_mtx[storage_idx].lock();
+    vector<unsigned char> data_vec = packet.data<vector<unsigned char>>();
+    string data_str = packet.data<string>();
     
-    return "";
+    int start_node_len = stoi(data_str.substr(0, 2));
+    string start_node = data_str.substr(2, node_len);
+    int start_recur = stoi(data_str.substr(2 + node_len, 1));
+
+    queue<pair<string, int> > nodes;
+    nodes.emplace(start_node, start_recur);
+    string result;
+    while (!nodes.empty()) {
+        string node;
+        int recur;
+        tie(node, recur) = nodes.front();
+        nodes.pop();
+        
+        //send and receive string
+        string storage_result = get_read_query(storage_idx, node, packet.nickname());
+        if (storage_result.back() != ';')
+            storage_result.push_back(';');
+        
+        result += storage_result;
+        for (int l = 0, r = 0, n = storage_result.size(); r < n; ++r) {
+            switch (storage_result[r]) {
+            case ',':
+            case ';':
+                if (recur > 1)
+                    nodes.emplace(storage_result.substr(l, r-l), recur - 1);
+            case ':':
+                l=r+1;
+                break;
+            default:
+                break;
+            }
+        }
+
+        storage_mtx[storage_idx].unlock();
+        return format_int(result.size(), 3) + result;
+    }
 }
+
 /*
     Send a message that can be too long to be sent in one packet, ONLY USED IN READ RESPONSES
     @param destinyFD: file descriptor of the destiny (socket)

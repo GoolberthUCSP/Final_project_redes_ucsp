@@ -24,6 +24,7 @@
     #include <thread>
     #include <set>
     #include <mutex>
+    #include <queue>
     #include "cache.h"
     #include "util.h"
     #include "packet.h"
