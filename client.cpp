@@ -331,6 +331,7 @@ void recv_notification(vector<unsigned char> data){
 void send_packet_to_server(Packet packet){
     string seq_num = format_int(seq_number, 2);
 
+    packet.set_packet_type("D");
     packet.set_seq_num(seq_num);
     packet.set_hash(calc_hash(packet.data<vector<unsigned char>>()));
     packet.set_msg_id(format_int(msg_id, 3));
