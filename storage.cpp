@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
     while(true){
         recv_packet.clear();
         bytes_readed = recvfrom(mainFD, &recv_packet, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&main_addr, (socklen_t *)&addr_len);
-        cout << MSG_RECV(recv_packet) << endl;
+        cout << MSG_RECV(main_addr, recv_packet) << endl;
         thread(processing, recv_packet).detach();
     }
 }

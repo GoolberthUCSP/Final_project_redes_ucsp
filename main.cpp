@@ -94,7 +94,7 @@ int main(){
             perror("recvfrom");
         }
         else{
-            cout << MSG_RECV(recv_packet) << endl;
+            cout << MSG_RECV(client_addr, recv_packet) << endl;
             // Received on time (With timeout)
             thread(processing_client, client_addr, recv_packet).detach();
         }
@@ -224,7 +224,7 @@ string process_cud_query(int storage_idx, Packet packet){
     do{
         result.clear();
         int bytes_readed = recvfrom(storageFD[storage_idx], &result, sizeof(Packet), MSG_WAITALL, (struct sockaddr *)&storage_addr[storage_idx], (socklen_t *)&addr_len);
-        cout << MSG_RECV(result) << endl;
+        cout << MSG_RECV(storage_addr[storage_idx], result) << endl;
         // If it's the response of the server's first query.
         if (ack_controllers.find(storage_nick) == ack_controllers.end()){
             ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);
