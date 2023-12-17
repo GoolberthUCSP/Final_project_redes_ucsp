@@ -109,7 +109,7 @@ public:
         if (data.size() > max_data_size()) 
             throw range_error("Data too long: " + data.size());
         clear_data();
-        copy(data.begin(), data.begin() + max_data_size(), data_value + 4);
+        copy(data.begin(), data.end(), data_value + 4);
         string data_size = to_string(data.size());
         data_size.insert(0, 3 - data_size.size(), '0');
         copy(data_size.begin(), data_size.begin() + 3, data_value + 1);

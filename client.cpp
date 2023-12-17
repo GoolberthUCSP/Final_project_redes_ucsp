@@ -79,7 +79,7 @@ int main(){
         string usr_input;
         getline(cin, usr_input);
         cin.clear();
-        usleep(50000);
+        usleep(20000);
         // If user input is exit or quit, exit program
         if (usr_input == "exit" || usr_input == "quit"){
             system("clear || cls");
@@ -137,7 +137,6 @@ void decoding(Packet packet){
         if (packet.flag() == "0"){
             vector<unsigned char> message = incomplete_message[message_id];
             incomplete_message.erase(message_id);
-            cout << "type: " << packet.data_type() << endl;
             thread(response_functions[packet.data_type()], message).detach();
         }
     }
@@ -174,7 +173,6 @@ void encoding(string buffer){
 void create_request(stringstream &ss){
     // ss : node1 node2
     Packet packet;
-    packet.set_packet_type("D");
 
     string node1, node2;
     getline(ss, node1, ' ');
@@ -182,12 +180,11 @@ void create_request(stringstream &ss){
     string size1 = format_int(node1.size(), 2);
     string size2 = format_int(node2.size(), 2);
     // Format data : 00 node1 00 node2
-    string data = "C" + size1 + node1 + size2 + node2;
+    string data = size1 + node1 + size2 + node2;
     
     packet.set_data(data);
     packet.set_data_type("C");
-    cout << "staging: " << endl;
-    packet.print();
+
     send_packet_to_server(packet);
 }
 
@@ -199,16 +196,16 @@ void create_request(stringstream &ss){
 void read_request(stringstream &ss){
     // ss : node
     Packet packet;
-    packet.set_data_type("R");
-    packet.set_packet_type("D");
 
     string node;
     getline(ss, node, '\0');
     string size = format_int(node.size(), 2);
     // Format data : 00 node 1
-    string data = "R" + size + node + "1"; // Depth = 1
+    string data = size + node + "1"; // Depth = 1
     
     packet.set_data(data);
+    packet.set_data_type("R");
+
     send_packet_to_server(packet);
 }
 
@@ -220,17 +217,17 @@ void read_request(stringstream &ss){
 void rread_request(stringstream &ss){
     // ss : depth node
     Packet packet;
-    packet.set_data_type("R");
-    packet.set_packet_type("D");
     
     string depth, node;
     getline(ss, depth, ' ');
     getline(ss, node, '\0');
     string size = format_int(node.size(), 2);
     // Format data : 00 node 0
-    string data = "r" + size + node + depth;
+    string data = size + node + depth;
     
     packet.set_data(data);
+    packet.set_data_type("R");
+
     send_packet_to_server(packet);
 }
 
@@ -242,8 +239,6 @@ void rread_request(stringstream &ss){
 void update_request(stringstream &ss){
     // ss : node1 node2 new2
     Packet packet;
-    packet.set_data_type("U");
-    packet.set_packet_type("D");
 
     string node1, node2, new2;
     getline(ss, node1, ' ');
@@ -253,9 +248,11 @@ void update_request(stringstream &ss){
     string size2 = format_int(node2.size(), 2);
     string size3 = format_int(new2.size(), 2);
     // Format data : 00 node1 00 node2 00 new2
-    string data = "U" + size1 + node1 + size2 + node2 + size3 + new2;
+    string data = size1 + node1 + size2 + node2 + size3 + new2;
     
     packet.set_data(data);
+    packet.set_data_type("U");
+
     send_packet_to_server(packet);
 }
 
@@ -267,8 +264,6 @@ void update_request(stringstream &ss){
 void delete_request(stringstream &ss){
     // ss : node1 node2
     Packet packet;
-    packet.set_data_type("D");
-    packet.set_packet_type("D");
 
     string node1, node2;
     getline(ss, node1, ' ');
@@ -276,9 +271,11 @@ void delete_request(stringstream &ss){
     string size1 = format_int(node1.size(), 2);
     string size2 = format_int(node2.size(), 2);
     // Format data : 00 node1 00 node2
-    string data = "D" + size1 + node1 + size2 + node2;
+    string data = size1 + node1 + size2 + node2;
     
     packet.set_data(data);
+    packet.set_data_type("D");
+
     send_packet_to_server(packet);
 }
 
@@ -314,7 +311,7 @@ void read_response(vector<unsigned char> data){
     @return void
 */
 void recv_notification(vector<unsigned char> data){
-    // ss : N00notification
+    // ss : 00notification
     stringstream ss;
     ss.write((char *)(data.data()+1), data.size());
     

@@ -131,7 +131,7 @@ void processing_client(struct sockaddr_in client, Packet packet){
 
 void answer_query(struct sockaddr_in client, Packet packet){
     // Key and nickname of the main storage server
-    int key = packet.data<vector<unsigned char>>()[2] % 4; //= first character of the first node. Every client data request begin with: 00node...
+    int key = packet.data<string>()[2] % 4; //= first character of the first node. Every client data request begin with: 00node...
     string storage_nick = to_string(key);
     // Key and nickname of the next storage server = redundant
     int next_key = (key + 1) % 4;
@@ -216,8 +216,7 @@ void keep_alive(){
 string process_cud_query(int storage_idx, Packet packet){
 
     storage_mtx[storage_idx].lock();
-    vector<unsigned char> data_vec = packet.data<vector<unsigned char>>();
-    string data_str(data_vec.begin(), data_vec.end());
+    string data_str = packet.data<string>();
     string storage_nick = to_string(storage_idx);
     Packet result;
     send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, packet.data_type(), packet.nickname());
@@ -249,11 +248,8 @@ string process_cud_query(int storage_idx, Packet packet){
         }
     } while(result.data_type() == "A");
     
-    vector <unsigned char> data = result.data<vector<unsigned char>>(); // data: N00notification-----...
-    int data_size = stoi(string(data.begin()+1, data.begin()+3)) + 2;
-    
     storage_mtx[storage_idx].unlock();
-    return string(data.begin(), data.begin() + data_size);
+    return result.data<string>();
 }
 
 /*
@@ -275,12 +271,7 @@ string process_read_query(Packet packet){
 */
 void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string type, string destiny_nick){
     Packet packet;
-    cout << "type b4: " << packet.data_type() << endl;
     packet.set_data_type(type);
-    cout << "type after: " << packet.data_type() << endl;
-
-    if (type != "A"){packet.set_packet_type("D");}
-    else {packet.set_packet_type("A");}
 
     packet.set_seq_num(format_int(seq_number, 2));
     packet.set_msg_id(format_int(msg_id, 3));

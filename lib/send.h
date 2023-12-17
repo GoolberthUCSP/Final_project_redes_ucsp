@@ -24,6 +24,8 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     stringstream ss;
     ss.write((char *)data.data(), data.size());
     string fragment(packet_data_size, 0);
+    // Set packet type, all packets are D
+    packet.set_packet_type("D");
     // Set flag to 1 to indicate that the packet is not the last one
     packet.set_flag("1");
     
@@ -48,8 +50,6 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     packet.set_flag("0");
     packet.set_seq_num(format_int(seq_num, 2));
     packet.set_data(fragment);
-    cout << "sending: " << endl;
-    packet.print();
     
     send_packet(destinyFD, destiny_addr, ack_controller, packet);
 
@@ -72,5 +72,5 @@ void send_packet(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     ack_controller.insert_packet(seq_num, packet);
     int bytes_sent = sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
     
-    cout << "Sent packet to " << inet_ntoa(destiny_addr.sin_addr) << ":" << ntohs(destiny_addr.sin_port) << " bytes sent: " << bytes_sent << endl;
+    cout << MSG_SEND(destiny_addr, packet) << endl;
 }
