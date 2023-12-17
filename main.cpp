@@ -102,7 +102,6 @@ int main(){
 }
 
 void processing_client(struct sockaddr_in client, Packet packet){
-
     string seq_num = packet.seq_num();
     string hash = packet.hash();
     string nickname = packet.nickname();
@@ -113,14 +112,14 @@ void processing_client(struct sockaddr_in client, Packet packet){
     }
 
     // If packet is ack
-    if (packet.type() == "A"){
+    if (packet.packet_type() == "A"){
         ack_controllers[nickname].process_ack(seq_num);
         return;
     }
 
 // If packet is not corrupted send one ACK, else send one more ACK
     // Calc hash only to data, without header
-    bool is_good= (hash == calc_hash(packet.data()))? true : false;
+    bool is_good= (hash == calc_hash(packet.data<vector<unsigned char>>()))? true : false;
     ack_controllers[nickname].replay_ack(seq_num);
     // If packet is corrupted, send one more ACK
     if (!is_good)
@@ -132,13 +131,13 @@ void processing_client(struct sockaddr_in client, Packet packet){
 
 void answer_query(struct sockaddr_in client, Packet packet){
     // Key and nickname of the main storage server
-    int key = packet.data()[2] % 4; //= first character of the first node. Every client data request begin with: 00node...
+    int key = packet.data<vector<unsigned char>>()[2] % 4; //= first character of the first node. Every client data request begin with: 00node...
     string storage_nick = to_string(key);
     // Key and nickname of the next storage server = redundant
     int next_key = (key + 1) % 4;
     string next_storage_nick = to_string(next_key);
 
-    if (packet.type() == "R"){
+    if (packet.data_type() == "R"){
         // Result can be a notification if one of the storage servers is not available
         // If depth is 1, the query is only for the main storage server
         string result = process_read_query(packet);
@@ -155,6 +154,7 @@ void answer_query(struct sockaddr_in client, Packet packet){
             return;
         }
         string notification;
+        
         if (is_alive[key]){
             // Do the query to the main storage server
             notification = process_cud_query(key, packet);
@@ -216,11 +216,11 @@ void keep_alive(){
 string process_cud_query(int storage_idx, Packet packet){
 
     storage_mtx[storage_idx].lock();
-    vector<unsigned char> data_vec = packet.data();
+    vector<unsigned char> data_vec = packet.data<vector<unsigned char>>();
     string data_str(data_vec.begin(), data_vec.end());
     string storage_nick = to_string(storage_idx);
     Packet result;
-    send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, packet.type(), packet.nickname());
+    send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, packet.data_type(), packet.nickname());
     // Do loop while the server answers with its 
     do{
         result.clear();
@@ -231,7 +231,7 @@ string process_cud_query(int storage_idx, Packet packet){
             ack_controllers[storage_nick] = ACK_controller("MAIN", storageFD[storage_idx], storage_addr[storage_idx]);
         }
 
-        if (result.type() == "A"){
+        if (result.packet_type() == "A"){
             ack_controllers[storage_nick].process_ack(result.seq_num());
             continue;
         }
@@ -239,18 +239,18 @@ string process_cud_query(int storage_idx, Packet packet){
     // If packet is not corrupted send one ACK, else send one more ACK
         // Calc hash only to data, without header
         string seq_num = result.seq_num();
-        bool is_good= (result.hash() == calc_hash(result.data()))? true : false;
+        bool is_good= (result.hash() == calc_hash(result.data<vector<unsigned char>>()))? true : false;
         ack_controllers[storage_nick].replay_ack(seq_num);
         // If packet is corrupted, send one more ACK
         if (!is_good){
             ack_controllers[storage_nick].replay_ack(seq_num);
             // If packet isn't good, wait one more time; change the type of the packet so as not to get out of the loop
-            result.set_type("A");
+            result.set_data_type("A");
         }
-    } while(result.type() == "A");
+    } while(result.data_type() == "A");
     
-    vector <unsigned char> data = result.data(); // data: 00notification-----...
-    int data_size = stoi(string(data.begin(), data.begin()+2)) + 2;
+    vector <unsigned char> data = result.data<vector<unsigned char>>(); // data: N00notification-----...
+    int data_size = stoi(string(data.begin()+1, data.begin()+3)) + 2;
     
     storage_mtx[storage_idx].unlock();
     return string(data.begin(), data.begin() + data_size);
@@ -262,6 +262,7 @@ string process_cud_query(int storage_idx, Packet packet){
     @return: result of the recursive or simple read   
 */
 string process_read_query(Packet packet){
+    
     return "";
 }
 /*
@@ -274,13 +275,19 @@ string process_read_query(Packet packet){
 */
 void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string type, string destiny_nick){
     Packet packet;
-    packet.set_type(type);
+    cout << "type b4: " << packet.data_type() << endl;
+    packet.set_data_type(type);
+    cout << "type after: " << packet.data_type() << endl;
+
+    if (type != "A"){packet.set_packet_type("D");}
+    else {packet.set_packet_type("A");}
+
     packet.set_seq_num(format_int(seq_number, 2));
     packet.set_msg_id(format_int(msg_id, 3));
     packet.set_nickname("MAIN");
 
     int packets_sent = send_message(destinyFD, destiny_addr, ack_controllers[destiny_nick], data, packet);
-
+    
     seq_number = (seq_number + packets_sent) % 100;
     msg_id = (msg_id + 1) % 1000;
 }

@@ -17,7 +17,7 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
 */
 int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller &ack_controller, string data, Packet packet){
 
-    int packet_data_size = packet.data_size();
+    int packet_data_size = packet.max_data_size();
     int remaining_size = data.size();
     int packets_sent = 0;
     int seq_num = stoi(packet.seq_num());
@@ -48,6 +48,8 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
     packet.set_flag("0");
     packet.set_seq_num(format_int(seq_num, 2));
     packet.set_data(fragment);
+    cout << "sending: " << endl;
+    packet.print();
     
     send_packet(destinyFD, destiny_addr, ack_controller, packet);
 
@@ -65,9 +67,10 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
 void send_packet(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller &ack_controller, Packet packet){
     int seq_num = stoi(packet.seq_num());
     // Calc hash only to data, without header
-    packet.set_hash(calc_hash(packet.data()));
+    packet.set_hash(calc_hash(packet.data<vector<unsigned char>>()));
     // Save packet into Cache if it's necesary to resend
     ack_controller.insert_packet(seq_num, packet);
     int bytes_sent = sendto(destinyFD, &packet, sizeof(Packet), MSG_CONFIRM, (struct sockaddr *)&destiny_addr, sizeof(struct sockaddr));
+    
     cout << "Sent packet to " << inet_ntoa(destiny_addr.sin_addr) << ":" << ntohs(destiny_addr.sin_port) << " bytes sent: " << bytes_sent << endl;
 }

@@ -84,24 +84,24 @@ int main(int argc, char *argv[]){
 void processing(Packet packet){
     string seq_num = packet.seq_num();
     string hash = packet.hash();
-    vector<unsigned char> data = packet.data();
+    vector<unsigned char> data = packet.data<vector<unsigned char>>();
 
     // If packet is ACK
-    if (packet.type() == "A"){
+    if (packet.packet_type() == "A"){
         ack_controller.process_ack(seq_num);
         return;
     }
     
 // If packet is not corrupted send one ACK, else send one more ACK 
     // Calc hash only to data, without header
-    bool is_good= (hash == calc_hash(packet.data()))? true : false; 
+    bool is_good= (hash == calc_hash(packet.data<vector<unsigned char>>()))? true : false; 
     ack_controller.replay_ack(seq_num);
     // If packet is corrupted, send second ACK
     if (!is_good) 
         ack_controller.replay_ack(seq_num);
     // If packet is good, process it
     else
-        thread(crud_requests[packet.type()], data).detach();
+        thread(crud_requests[packet.data_type()], data).detach();
 }
 
 void send_message_to_server(string type, string data){
@@ -109,7 +109,11 @@ void send_message_to_server(string type, string data){
     // Set packet header
     packet.set_seq_num(format_int(seq_number, 2));
     packet.set_msg_id(format_int(msg_id, 3));
-    packet.set_type(type);
+    packet.set_data_type(type);
+
+    if (type != "A"){packet.set_packet_type("D");}
+    else {packet.set_packet_type("A");}
+
     packet.set_nickname(storage_nick);
 
     int packets_sent = send_message(mainFD, main_addr, ack_controller, data, packet);
@@ -122,7 +126,7 @@ void send_message_to_server(string type, string data){
 void create_request(vector<unsigned char> data){
     // data : 00node100node2
     stringstream ss;
-    ss.write((char *)data.data(), data.size());
+    ss.write((char *)(data.data()+1), data.size());
     string size1(2, 0), size2(2, 0);
     // Reading node1
     ss.read(size1.data(), size1.size());

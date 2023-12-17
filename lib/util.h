@@ -57,7 +57,7 @@ string format_int(int num, int size){
     @return string in format 00data, 00 = size of data
 */
 string notify(string data){
-    return format_int(data.size(), 2) + data;
+    return "N" + format_int(data.size(), 2) + data;
 }
 
 

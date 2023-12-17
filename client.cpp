@@ -112,14 +112,13 @@ void thread_receiver(){
     @return void
 */
 void decoding(Packet packet){
-    
     string seq_num = packet.seq_num();
     string hash = packet.hash();
-    vector<unsigned char> data = packet.data();
+    vector<unsigned char> data = packet.data<vector<unsigned char>>();
     string message_id = packet.msg_id();
     
     // If packet is ack
-    if (packet.type() == "A"){
+    if (packet.packet_type() == "A"){
         ack_controller.process_ack(seq_num);
         return;
     }
@@ -134,12 +133,12 @@ void decoding(Packet packet){
     // If packet is not corrupted and it´s a CRUD response
     else{
         copy(data.begin(), data.end(), back_inserter(incomplete_message[message_id]));
-        
         // Verify if flag = 1 (incomplete) else (complete)
         if (packet.flag() == "0"){
             vector<unsigned char> message = incomplete_message[message_id];
             incomplete_message.erase(message_id);
-            thread(response_functions[packet.type()], message).detach();
+            cout << "type: " << packet.data_type() << endl;
+            thread(response_functions[packet.data_type()], message).detach();
         }
     }
 }
@@ -175,7 +174,7 @@ void encoding(string buffer){
 void create_request(stringstream &ss){
     // ss : node1 node2
     Packet packet;
-    packet.set_type("C");
+    packet.set_packet_type("D");
 
     string node1, node2;
     getline(ss, node1, ' ');
@@ -183,9 +182,12 @@ void create_request(stringstream &ss){
     string size1 = format_int(node1.size(), 2);
     string size2 = format_int(node2.size(), 2);
     // Format data : 00 node1 00 node2
-    string data = size1 + node1 + size2 + node2;
+    string data = "C" + size1 + node1 + size2 + node2;
     
     packet.set_data(data);
+    packet.set_data_type("C");
+    cout << "staging: " << endl;
+    packet.print();
     send_packet_to_server(packet);
 }
 
@@ -197,13 +199,14 @@ void create_request(stringstream &ss){
 void read_request(stringstream &ss){
     // ss : node
     Packet packet;
-    packet.set_type("R");
+    packet.set_data_type("R");
+    packet.set_packet_type("D");
 
     string node;
     getline(ss, node, '\0');
     string size = format_int(node.size(), 2);
     // Format data : 00 node 1
-    string data = size + node + "1"; // Depth = 1
+    string data = "R" + size + node + "1"; // Depth = 1
     
     packet.set_data(data);
     send_packet_to_server(packet);
@@ -217,14 +220,15 @@ void read_request(stringstream &ss){
 void rread_request(stringstream &ss){
     // ss : depth node
     Packet packet;
-    packet.set_type("R");
+    packet.set_data_type("R");
+    packet.set_packet_type("D");
     
     string depth, node;
     getline(ss, depth, ' ');
     getline(ss, node, '\0');
     string size = format_int(node.size(), 2);
     // Format data : 00 node 0
-    string data = size + node + depth;
+    string data = "r" + size + node + depth;
     
     packet.set_data(data);
     send_packet_to_server(packet);
@@ -238,7 +242,8 @@ void rread_request(stringstream &ss){
 void update_request(stringstream &ss){
     // ss : node1 node2 new2
     Packet packet;
-    packet.set_type("U");
+    packet.set_data_type("U");
+    packet.set_packet_type("D");
 
     string node1, node2, new2;
     getline(ss, node1, ' ');
@@ -248,7 +253,7 @@ void update_request(stringstream &ss){
     string size2 = format_int(node2.size(), 2);
     string size3 = format_int(new2.size(), 2);
     // Format data : 00 node1 00 node2 00 new2
-    string data = size1 + node1 + size2 + node2 + size3 + new2;
+    string data = "U" + size1 + node1 + size2 + node2 + size3 + new2;
     
     packet.set_data(data);
     send_packet_to_server(packet);
@@ -262,7 +267,8 @@ void update_request(stringstream &ss){
 void delete_request(stringstream &ss){
     // ss : node1 node2
     Packet packet;
-    packet.set_type("D");
+    packet.set_data_type("D");
+    packet.set_packet_type("D");
 
     string node1, node2;
     getline(ss, node1, ' ');
@@ -270,7 +276,7 @@ void delete_request(stringstream &ss){
     string size1 = format_int(node1.size(), 2);
     string size2 = format_int(node2.size(), 2);
     // Format data : 00 node1 00 node2
-    string data = size1 + node1 + size2 + node2;
+    string data = "D" + size1 + node1 + size2 + node2;
     
     packet.set_data(data);
     send_packet_to_server(packet);
@@ -308,9 +314,9 @@ void read_response(vector<unsigned char> data){
     @return void
 */
 void recv_notification(vector<unsigned char> data){
-    // ss : 00notification
+    // ss : N00notification
     stringstream ss;
-    ss.write((char *)data.data(), data.size());
+    ss.write((char *)(data.data()+1), data.size());
     
     string size(2, 0);
 
@@ -329,7 +335,7 @@ void send_packet_to_server(Packet packet){
     string seq_num = format_int(seq_number, 2);
 
     packet.set_seq_num(seq_num);
-    packet.set_hash(calc_hash(packet.data()));
+    packet.set_hash(calc_hash(packet.data<vector<unsigned char>>()));
     packet.set_msg_id(format_int(msg_id, 3));
     packet.set_nickname(nickname);
     // Send message in one packet without fragmentation
