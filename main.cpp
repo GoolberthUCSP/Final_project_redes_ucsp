@@ -31,7 +31,7 @@ void answer_query(struct sockaddr_in client, Packet packet);
 void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string type, string destiny_nick);
 
 
-string process_read_query(Packet packet);
+string process_read_query(int storage_idx, Packet packet);
 string process_cud_query(int storage_idx, Packet packet);
 
 int main(){
@@ -138,10 +138,29 @@ void answer_query(struct sockaddr_in client, Packet packet){
     string next_storage_nick = to_string(next_key);
 
     if (packet.data_type() == "R"){
-        // Result can be a notification if one of the storage servers is not available
-        // If depth is 1, the query is only for the main storage server
-        string result = process_read_query(packet);
-        send_message_to_one(clientFD, client, result, "R", packet.nickname());
+        // If no one is alive, send a notification of failure
+        if (!is_alive[key] && !is_alive[next_key]) {
+            string msg = notify("Operation failed: Storage servers " + storage_nick + " and " + next_storage_nick + " are not available");
+            // Send notification to the client
+            send_message_to_one(clientFD, client, msg, "N", packet.nickname());
+            return;
+        }
+
+        string result;
+        if (is_alive[key]) {
+            // Do the query to the main storage server
+            result = process_read_query(key, packet);
+        } else { 
+            // Do the same operation with the next storage server
+            result = process_read_query(next_key, packet);
+        }
+
+        if (!result.empty()) {
+            send_message_to_one(clientFD, client, result, "R", packet.nickname());
+        } else {
+            result = notify("Operation failed: Node not found in the server");
+            send_message_to_one(clientFD, client, result, "N", packet.nickname());
+        }
     }
     // If packet is not a read query, storage server sends only a notification
     // To do the query, it needs that the two storage servers are alive
@@ -259,7 +278,7 @@ string process_cud_query(int storage_idx, Packet packet){
     @param nickname: nickname of client
     @return: edges with the node as the first element
 */
-string get_read_query(int storage_idx, string node, string nickname) {
+string get_read_query(int storage_idx, const string& node, const string& nickname) {
     string data_str = format_int(node.size(), 2) + node + "1";
     string storage_nick = to_string(storage_idx);
     send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, "R", nickname);
@@ -293,9 +312,11 @@ string get_read_query(int storage_idx, string node, string nickname) {
         }
     } while(result.data_type() == "A");
     
+    if (result.data_type() == "N")
+        return string();
+
     vector<unsigned char> data = result.data<vector<unsigned char>>(); 
     int data_size = stoi(string(data.begin(), data.begin()+2));
-    
     return string(data.begin() + 2, data.begin() + 2 + data_size);
 }
 
@@ -311,8 +332,8 @@ string process_read_query(int storage_idx, Packet packet) {
     string data_str = packet.data<string>();
     
     int start_node_len = stoi(data_str.substr(0, 2));
-    string start_node = data_str.substr(2, node_len);
-    int start_recur = stoi(data_str.substr(2 + node_len, 1));
+    string start_node = data_str.substr(2, start_node_len);
+    int start_recur = stoi(data_str.substr(2 + start_node_len, 1));
 
     queue<pair<string, int> > nodes;
     nodes.emplace(start_node, start_recur);
@@ -342,10 +363,13 @@ string process_read_query(int storage_idx, Packet packet) {
                 break;
             }
         }
-
-        storage_mtx[storage_idx].unlock();
-        return format_int(result.size(), 3) + result;
     }
+
+    storage_mtx[storage_idx].unlock();
+    if (result.empty())
+        return string();
+
+    return format_int(result.size(), 3) + result;
 }
 
 /*
