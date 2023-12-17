@@ -31,7 +31,7 @@ void answer_query(struct sockaddr_in client, Packet packet);
 void send_message_to_one(int destinyFD, struct sockaddr_in destiny_addr, string data, string type, string destiny_nick);
 
 
-string process_read_query(int storage_idx, Packet packet);
+string process_read_query(Packet packet);
 string process_cud_query(int storage_idx, Packet packet);
 
 int main(){
@@ -149,10 +149,10 @@ void answer_query(struct sockaddr_in client, Packet packet){
         string result;
         if (is_alive[key]) {
             // Do the query to the main storage server
-            result = process_read_query(key, packet);
+            result = process_read_query(packet);
         } else { 
             // Do the same operation with the next storage server
-            result = process_read_query(next_key, packet);
+            result = process_read_query(packet);
         }
 
         if (!result.empty()) {
@@ -266,7 +266,7 @@ string process_cud_query(int storage_idx, Packet packet){
             result.set_data_type("A");
         }
     } while(result.data_type() == "A");
-    
+
     storage_mtx[storage_idx].unlock();
     return result.data<string>();
 }
@@ -278,7 +278,14 @@ string process_cud_query(int storage_idx, Packet packet){
     @param nickname: nickname of client
     @return: edges with the node as the first element
 */
-string get_read_query(int storage_idx, const string& node, const string& nickname) {
+string get_read_query(const string& node, const string& nickname) {
+    int storage_idx = node[0] % 4;
+    if (!is_alive[storage_idx]) 
+        storage_idx = (storage_idx + 1) % 4;
+    
+    if (!is_alive[storage_idx])
+        return string();
+    
     string data_str = format_int(node.size(), 2) + node + "1";
     string storage_nick = to_string(storage_idx);
     send_message_to_one(storageFD[storage_idx], storage_addr[storage_idx], data_str, "R", nickname);
@@ -316,8 +323,8 @@ string get_read_query(int storage_idx, const string& node, const string& nicknam
         return string();
 
     vector<unsigned char> data = result.data<vector<unsigned char>>(); 
-    int data_size = stoi(string(data.begin(), data.begin()+2));
-    return string(data.begin() + 2, data.begin() + 2 + data_size);
+    int data_size = stoi(string(data.begin(), data.begin() + 3));
+    return string(data.begin() + 3, data.begin() + 3 + data_size);
 }
 
 /*
@@ -326,8 +333,10 @@ string get_read_query(int storage_idx, const string& node, const string& nicknam
     @param packet: packet to send to the storage server
     @return: result of the recursive or simple read   
 */
-string process_read_query(int storage_idx, Packet packet) {
-    storage_mtx[storage_idx].lock();
+string process_read_query(Packet packet) {
+    for(int i = 0; i < 4; ++i)
+        storage_mtx[i].lock();
+
     vector<unsigned char> data_vec = packet.data<vector<unsigned char>>();
     string data_str = packet.data<string>();
     
@@ -335,8 +344,12 @@ string process_read_query(int storage_idx, Packet packet) {
     string start_node = data_str.substr(2, start_node_len);
     int start_recur = stoi(data_str.substr(2 + start_node_len, 1));
 
+    cerr << "DEBUG: " << start_node << " " << start_recur << "\n";
+
     queue<pair<string, int> > nodes;
+    set<string> used_nodes;
     nodes.emplace(start_node, start_recur);
+    used_nodes.insert(start_node);
     string result;
     while (!nodes.empty()) {
         string node;
@@ -345,8 +358,8 @@ string process_read_query(int storage_idx, Packet packet) {
         nodes.pop();
         
         //send and receive string
-        string storage_result = get_read_query(storage_idx, node, packet.nickname());
-        if (storage_result.back() != ';')
+        string storage_result = get_read_query(node, packet.nickname());
+        if (!storage_result.empty() && storage_result.back() != ';')
             storage_result.push_back(';');
         
         result += storage_result;
@@ -354,10 +367,12 @@ string process_read_query(int storage_idx, Packet packet) {
             switch (storage_result[r]) {
             case ',':
             case ';':
-                if (recur > 1)
-                    nodes.emplace(storage_result.substr(l, r-l), recur - 1);
+                if (recur > 1 && !used_nodes.count(storage_result.substr(l, r - l))) {
+                    nodes.emplace(storage_result.substr(l, r - l), recur - 1);
+                    used_nodes.insert(storage_result.substr(l, r - l));
+                }
             case ':':
-                l=r+1;
+                l = r + 1;
                 break;
             default:
                 break;
@@ -365,9 +380,13 @@ string process_read_query(int storage_idx, Packet packet) {
         }
     }
 
-    storage_mtx[storage_idx].unlock();
+    // cerr << "DEBUG: " << result << "\n";
+
+    for(int i = 0; i < 4; ++i)
+        storage_mtx[i].unlock();
+
     if (result.empty())
-        return string();
+        return result;
 
     return format_int(result.size(), 3) + result;
 }

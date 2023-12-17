@@ -1,9 +1,10 @@
 #ifndef GRAPHDB_HPP
 #define GRAPHDB_HPP
 
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
 #include <string>
+#include <iostream>
 
 #include <vector>
 #include <utility>
@@ -14,7 +15,7 @@ std::vector<Edge> stringToEdgeList (std::string data);
 
 class GraphDB {
     
-    std::unordered_map<std::string, std::unordered_set<std::string> > adj;
+    std::map<std::string, std::set<std::string> > adj;
     
 public:
     //Create connection between from and to
@@ -113,7 +114,7 @@ public:
 std::vector<std::string>
 edgeListToString (std::vector<Edge> list, int packet_data_size)
 {
-    std::unordered_map<std::string, std::unordered_set<std::string>> buff;
+    std::map<std::string, std::set<std::string>> buff;
     std::string out;
     std::vector<std::string> result;
 

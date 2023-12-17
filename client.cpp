@@ -283,26 +283,33 @@ void delete_request(stringstream &ss){
 
 /*
     Process read response from the server, can be simple or recursive
-    @param data: formatted data (00node000node1,node2,etc. 00 = size of node, 000 = size of nodes)
+    @param data: formatted data
     @return void
 */
 void read_response(vector<unsigned char> data){
-    // ss : 00node000node1,node2,etc
-    stringstream ss;
-    ss.write((char *)data.data(), data.size());
-
-    string node_size(2, 0), nodes_size(3, 0);
-
-    ss.read(node_size.data(), node_size.size());
-    string node(stoi(node_size), 0);
-    ss.read(node.data(), node.size());
-
-    ss.read(nodes_size.data(), nodes_size.size());
-    string nodes(stoi(nodes_size), 0);
-    ss.read(nodes.data(), nodes.size());
-    cout << "Read response: " << node << "->" << nodes << endl;
-
-    // TODO: Process the recursive read response
+    // ss : 000node1:node2,node3;node2:node3,node4;...
+    int data_size = stoi(string(data.begin(), data.begin() + 3));
+    string formatted_data(data.begin() + 3, data.begin() + 3 + data_size);
+    cout << "Read response:\n";
+    string from_node;
+    for (int l = 0, r = 0, n = formatted_data.size(); r < n; ++r) {
+        switch (formatted_data[r]) {
+        case ',':
+            cout << from_node << " -> " << formatted_data.substr(l, r - l) << "\n";
+            l = r + 1;
+            break;
+        case ';':
+            cout << from_node << " -> " << formatted_data.substr(l, r - l) << "\n\n";
+            l = r + 1;
+            break;
+        case ':':
+            from_node = formatted_data.substr(l, r - l);
+            l = r + 1;
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 /*
