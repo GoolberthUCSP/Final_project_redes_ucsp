@@ -35,7 +35,7 @@
     // CACHE_SIZE of packets
     #define ERROR(s) {perror(s); exit(1);}
     // Message recv and send macros
-    #define MSG_RECV(packet) "Received packet from " + packet.nickname() + ", with header: " + packet.header()
-    #define MSG_SEND(destiny, packet) "Sending packet to " + destiny + ", with header: " + packet.header()
+    #define MSG_RECV(origin_addr, packet) "Recv packet from " + string(inet_ntoa(origin_addr.sin_addr)) + ":" + to_string(ntohs(origin_addr.sin_port)) + ", with header: " + packet.head()
+    #define MSG_SEND(destiny_addr, packet) string("Sent  packet  to ") + string(inet_ntoa(destiny_addr.sin_addr)) + ":" + to_string(ntohs(destiny_addr.sin_port)) + ", with header: " + packet.head()
     #define CACHE_SIZE 10
 #endif

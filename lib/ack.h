@@ -18,8 +18,9 @@ struct ACK_controller{
     ACK_controller(string nickname, int fd, struct sockaddr_in addr) : nickname(nickname), originFD(fd), origin_addr(addr) {
         packets.size = CACHE_SIZE;
 
+        ack_packet.set_packet_type("A");
         ack_packet.set_hash("000000");
-        ack_packet.set_type("A");
+        ack_packet.set_data_type("A");
         ack_packet.set_msg_id("000");
         ack_packet.set_flag("0");
         ack_packet.set_nickname(nickname);
