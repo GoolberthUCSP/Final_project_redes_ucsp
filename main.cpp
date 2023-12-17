@@ -1,6 +1,7 @@
 #include "lib/macros.h"
 #include "lib/ack.h"
 #include "lib/send.h"
+#include "lib/graphdb.hpp"
 
 using namespace std;
 
@@ -155,8 +156,15 @@ void answer_query(struct sockaddr_in client, Packet packet){
             result = process_read_query(packet);
         }
 
-        if (!result.empty()) {
-            send_message_to_one(clientFD, client, result, "R", packet.nickname());
+        if (!result.empty())
+        {
+            vector<Edge> result_edges = stringToEdgeList(result);
+            vector<string> result_list = edgeListToString(result_edges, DATA_SIZE-5);
+            for (int i = 0; i < result_list.size(); i++)
+            {
+                send_message_to_one(clientFD, client, (format_int(result_list[i].size(), 3) + result_list[i]), "R", packet.nickname());
+                usleep(10000);
+            }
         } else {
             result = notify("Operation failed: Node not found in the server");
             send_message_to_one(clientFD, client, result, "N", packet.nickname());
@@ -388,7 +396,8 @@ string process_read_query(Packet packet) {
     if (result.empty())
         return result;
 
-    return format_int(result.size(), 3) + result;
+    //return format_int(result.size(), 3) + result;
+    return result;
 }
 
 /*
