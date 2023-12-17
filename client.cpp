@@ -79,7 +79,11 @@ int main(){
         string usr_input;
         getline(cin, usr_input);
         cin.clear();
+<<<<<<< HEAD
         usleep(10000);
+=======
+        usleep(20000);
+>>>>>>> test
         // If user input is exit or quit, exit program
         if (usr_input == "exit" || usr_input == "quit"){
             system("clear || cls");
@@ -112,14 +116,13 @@ void thread_receiver(){
     @return void
 */
 void decoding(Packet packet){
-    
     string seq_num = packet.seq_num();
     string hash = packet.hash();
-    vector<unsigned char> data = packet.data();
+    vector<unsigned char> data = packet.data<vector<unsigned char>>();
     string message_id = packet.msg_id();
     
     // If packet is ack
-    if (packet.type() == "A"){
+    if (packet.packet_type() == "A"){
         ack_controller.process_ack(seq_num);
         return;
     }
@@ -134,12 +137,11 @@ void decoding(Packet packet){
     // If packet is not corrupted and it´s a CRUD response
     else{
         copy(data.begin(), data.end(), back_inserter(incomplete_message[message_id]));
-        
         // Verify if flag = 1 (incomplete) else (complete)
         if (packet.flag() == "0"){
             vector<unsigned char> message = incomplete_message[message_id];
             incomplete_message.erase(message_id);
-            thread(response_functions[packet.type()], message).detach();
+            thread(response_functions[packet.data_type()], message).detach();
         }
     }
 }
@@ -175,7 +177,6 @@ void encoding(string buffer){
 void create_request(stringstream &ss){
     // ss : node1 node2
     Packet packet;
-    packet.set_type("C");
 
     string node1, node2;
     getline(ss, node1, ' ');
@@ -186,6 +187,8 @@ void create_request(stringstream &ss){
     string data = size1 + node1 + size2 + node2;
     
     packet.set_data(data);
+    packet.set_data_type("C");
+
     send_packet_to_server(packet);
 }
 
@@ -197,7 +200,6 @@ void create_request(stringstream &ss){
 void read_request(stringstream &ss){
     // ss : node
     Packet packet;
-    packet.set_type("R");
 
     string node;
     getline(ss, node, '\0');
@@ -206,6 +208,8 @@ void read_request(stringstream &ss){
     string data = size + node + "1"; // Depth = 1
     
     packet.set_data(data);
+    packet.set_data_type("R");
+
     send_packet_to_server(packet);
 }
 
@@ -217,7 +221,6 @@ void read_request(stringstream &ss){
 void rread_request(stringstream &ss){
     // ss : depth node
     Packet packet;
-    packet.set_type("R");
     
     string depth, node;
     getline(ss, depth, ' ');
@@ -227,6 +230,8 @@ void rread_request(stringstream &ss){
     string data = size + node + depth;
     
     packet.set_data(data);
+    packet.set_data_type("R");
+
     send_packet_to_server(packet);
 }
 
@@ -238,7 +243,6 @@ void rread_request(stringstream &ss){
 void update_request(stringstream &ss){
     // ss : node1 node2 new2
     Packet packet;
-    packet.set_type("U");
 
     string node1, node2, new2;
     getline(ss, node1, ' ');
@@ -251,6 +255,8 @@ void update_request(stringstream &ss){
     string data = size1 + node1 + size2 + node2 + size3 + new2;
     
     packet.set_data(data);
+    packet.set_data_type("U");
+
     send_packet_to_server(packet);
 }
 
@@ -262,7 +268,6 @@ void update_request(stringstream &ss){
 void delete_request(stringstream &ss){
     // ss : node1 node2
     Packet packet;
-    packet.set_type("D");
 
     string node1, node2;
     getline(ss, node1, ' ');
@@ -273,6 +278,8 @@ void delete_request(stringstream &ss){
     string data = size1 + node1 + size2 + node2;
     
     packet.set_data(data);
+    packet.set_data_type("D");
+
     send_packet_to_server(packet);
 }
 
@@ -310,7 +317,7 @@ void read_response(vector<unsigned char> data){
 void recv_notification(vector<unsigned char> data){
     // ss : 00notification
     stringstream ss;
-    ss.write((char *)data.data(), data.size());
+    ss.write((char *)(data.data()+1), data.size());
     
     string size(2, 0);
 
@@ -329,7 +336,7 @@ void send_packet_to_server(Packet packet){
     string seq_num = format_int(seq_number, 2);
 
     packet.set_seq_num(seq_num);
-    packet.set_hash(calc_hash(packet.data()));
+    packet.set_hash(calc_hash(packet.data<vector<unsigned char>>()));
     packet.set_msg_id(format_int(msg_id, 3));
     packet.set_nickname(nickname);
     // Send message in one packet without fragmentation
