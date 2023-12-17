@@ -42,6 +42,7 @@ int send_message(int destinyFD, struct sockaddr_in destiny_addr, ACK_controller 
         
         packets_sent++;
         seq_num = (seq_num + 1) % 100; // Increment sequence number
+        usleep(10000);
     }
     // Send last packet
     fragment.resize(remaining_size);

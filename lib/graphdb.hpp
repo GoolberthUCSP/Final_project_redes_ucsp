@@ -132,11 +132,11 @@ edgeListToString (std::vector<Edge> list, int packet_data_size)
             {
                 if (out[out.size()-1] == ':')
                 {
-                    out.erase(out.end()-3, out.end());
+                    out.erase(out.end()-2, out.end());
                 }
                 else
                 {
-                    out.erase(out.end()-1);
+                    out[out.size()-1] = ';';
                 }
                 result.push_back(out);
                 out = pair.first + ":";
@@ -145,7 +145,6 @@ edgeListToString (std::vector<Edge> list, int packet_data_size)
         }
         out[out.size()-1] = ';';
     }
-    out.erase(out.end()-1);
     result.push_back(out);
 
     return result;
@@ -159,12 +158,12 @@ stringToEdgeList (std::string data)
     std::string currentFirst;
     for (int i = 0; i < data.size(); i++)
     {
-        if (data[i] == ';')
+        if (data[i] == ':')
         {
             currentFirst = word;
             word.clear();
         }
-        else if (data[i] == ',')
+        else if (data[i] == ',' || data[i] == ';')
         {
             result.push_back(std::make_pair(currentFirst, word));
             word.clear();
@@ -174,7 +173,6 @@ stringToEdgeList (std::string data)
             word += data[i];
         }
     }
-    result.push_back(std::make_pair(currentFirst, word));
     return result;
 }
 
