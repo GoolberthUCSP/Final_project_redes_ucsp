@@ -79,7 +79,7 @@ int main(){
         string usr_input;
         getline(cin, usr_input);
         cin.clear();
-        usleep(50000);
+        usleep(10000);
         // If user input is exit or quit, exit program
         if (usr_input == "exit" || usr_input == "quit"){
             system("clear || cls");
