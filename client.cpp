@@ -279,6 +279,7 @@ void delete_request(stringstream &ss){
 // Receive functions
 
 /*
+    TODO: Procesar el formato de la documentacion: 041A:B,C;B:D,E,F;C:G;D:H,I;E:J,K;F:L;G:M,N,O
     Process read response from the server, can be simple or recursive
     @param data: formatted data (00node000node1,node2,etc. 00 = size of node, 000 = size of nodes)
     @return void
