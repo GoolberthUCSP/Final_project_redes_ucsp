@@ -18,7 +18,7 @@ bool is_alive[4]{0}; // all storages start in death state
 struct sockaddr_in storage_keep_alive_addr[4], storage_keep_alive_conn;
 struct sockaddr_in storage_addr[4], storage_conn;
 int storageFD[4];
-int storage_port[4] = {5001, 5002, 5003, 5004};
+int storage_port[4] = {20121, 20122, 20123, 20124};
 mutex storage_mtx[4];
 //Only for receiving read responses from storages
 vector<map<string, vector<unsigned char>>> incomplete_message(4); // msg_id, data
@@ -54,14 +54,14 @@ int main(){
     
     // configure client's socket
     client_addr.sin_family = AF_INET;
-    client_addr.sin_port = htons(5000);
+    client_addr.sin_port = htons(20120);
     if (inet_pton(AF_INET, THIS_IP.c_str(), &client_addr.sin_addr) == -1)                ERROR("inet_pton")
     if (bind(clientFD,(struct sockaddr *)&client_addr, sizeof(struct sockaddr)) == -1)   ERROR("Bind")
     //if (setsockopt(clientFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0) ERROR("setsockopt")
 
     // configure keep-alive socket
     keep_alive_addr.sin_family = AF_INET;
-    keep_alive_addr.sin_port = htons(5005);
+    keep_alive_addr.sin_port = htons(20125);
     if (inet_pton(AF_INET, THIS_IP.c_str(), &keep_alive_addr.sin_addr) == -1)                  ERROR("inet_pton")
     if (bind(keep_aliveFD,(struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr)) == -1) ERROR("Bind")
     if (setsockopt(keep_aliveFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0)   ERROR("setsockopt")   

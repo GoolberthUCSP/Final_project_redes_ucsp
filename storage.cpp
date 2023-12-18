@@ -16,7 +16,7 @@ int addr_len= sizeof(struct sockaddr_in);
 
 ACK_controller ack_controller;
 GraphDB database; // database["node"]: {nodes that are connected to "node"}
-vector<int> storage_ports= {5001, 5002, 5003, 5004};
+vector<int> storage_ports= {20121, 20122, 20123, 20124};
 
 // CRUD request functions
 void create_request(vector<unsigned char> data);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){
     // Define the keep-alive server's address
     memset(&keep_alive_addr, 0, sizeof(keep_alive_addr));
     keep_alive_addr.sin_family = AF_INET;
-    keep_alive_addr.sin_port = htons(5005);
+    keep_alive_addr.sin_port = htons(20125);
     if (inet_pton(AF_INET, MAIN_IP.c_str(), &keep_alive_addr.sin_addr) == -1) ERROR("inet_pton")
 
     thread(keep_alive).detach();
