@@ -61,7 +61,7 @@ int main(){
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(20120);
-    if (inet_pton(AF_INET, SERVER_IP.c_str(), &server_addr.sin_addr) == -1)   ERROR("inet_pton")
+    if (inet_pton(AF_INET, MAIN_IP, &server_addr.sin_addr) == -1)   ERROR("inet_pton")
 
     // Process user nickname, if it is too long, cut it into 9 characters
     cout << "Input your nickname: ";

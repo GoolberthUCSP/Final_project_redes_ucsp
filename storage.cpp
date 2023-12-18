@@ -7,7 +7,6 @@ using namespace std;
 
 int mainFD, keep_aliveFD;
 struct sockaddr_in main_addr, keep_alive_addr;
-string MAIN_IP = "127.0.0.1";
 int seq_number = 0;
 int msg_id = 0;
 int storage_idx;
@@ -57,13 +56,13 @@ int main(int argc, char *argv[]){
     memset(&main_addr, 0, sizeof(main_addr));
     main_addr.sin_family = AF_INET;
     main_addr.sin_port = htons(port);
-    if (inet_pton(AF_INET, MAIN_IP.c_str(), &main_addr.sin_addr) == -1) ERROR("inet_pton")
+    if (inet_pton(AF_INET, MAIN_IP, &main_addr.sin_addr) == -1) ERROR("inet_pton")
 
     // Define the keep-alive server's address
     memset(&keep_alive_addr, 0, sizeof(keep_alive_addr));
     keep_alive_addr.sin_family = AF_INET;
     keep_alive_addr.sin_port = htons(20125);
-    if (inet_pton(AF_INET, MAIN_IP.c_str(), &keep_alive_addr.sin_addr) == -1) ERROR("inet_pton")
+    if (inet_pton(AF_INET, MAIN_IP, &keep_alive_addr.sin_addr) == -1) ERROR("inet_pton")
 
     thread(keep_alive).detach();
 

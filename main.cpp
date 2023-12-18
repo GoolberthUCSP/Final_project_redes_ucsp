@@ -37,7 +37,6 @@ string process_cud_query(int storage_idx, Packet packet);
 
 int main(){
     Packet recv_packet;
-    string THIS_IP = "127.0.0.1";
     tv.tv_sec = SEC_TIMEOUT;
     tv.tv_usec = USEC_TIMEOUT;
     
@@ -55,14 +54,14 @@ int main(){
     // configure client's socket
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(20120);
-    if (inet_pton(AF_INET, THIS_IP.c_str(), &client_addr.sin_addr) == -1)                ERROR("inet_pton")
+    if (inet_pton(AF_INET, MAIN_IP, &client_addr.sin_addr) == -1)                ERROR("inet_pton")
     if (bind(clientFD,(struct sockaddr *)&client_addr, sizeof(struct sockaddr)) == -1)   ERROR("Bind")
     //if (setsockopt(clientFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0) ERROR("setsockopt")
 
     // configure keep-alive socket
     keep_alive_addr.sin_family = AF_INET;
     keep_alive_addr.sin_port = htons(20125);
-    if (inet_pton(AF_INET, THIS_IP.c_str(), &keep_alive_addr.sin_addr) == -1)                  ERROR("inet_pton")
+    if (inet_pton(AF_INET, MAIN_IP, &keep_alive_addr.sin_addr) == -1)                  ERROR("inet_pton")
     if (bind(keep_aliveFD,(struct sockaddr *)&keep_alive_addr, sizeof(struct sockaddr)) == -1) ERROR("Bind")
     if (setsockopt(keep_aliveFD, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0)   ERROR("setsockopt")   
 
@@ -71,7 +70,7 @@ int main(){
         memset(&storage_addr[i], 0, sizeof(storage_addr[i]));
         storage_addr[i].sin_family = AF_INET;
         storage_addr[i].sin_port = htons(storage_port[i]);
-        if (inet_pton(AF_INET, THIS_IP.c_str(), &storage_addr[i].sin_addr) == -1)                   ERROR("inet_pton")
+        if (inet_pton(AF_INET, MAIN_IP, &storage_addr[i].sin_addr) == -1)                   ERROR("inet_pton")
         if (bind(storageFD[i],(struct sockaddr *)&storage_addr[i], sizeof(struct sockaddr)) == -1)  ERROR("Bind")
         //if (setsockopt(storageFD[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv)) < 0)    ERROR("setsockopt")
     }

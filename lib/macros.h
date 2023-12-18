@@ -39,4 +39,6 @@
     #define MSG_RECV(origin_addr, packet) "Recv packet from " + string(inet_ntoa(origin_addr.sin_addr)) + ":" + to_string(ntohs(origin_addr.sin_port)) + ", with header: " + packet.head()
     #define MSG_SEND(destiny_addr, packet) string("Sent  packet  to ") + string(inet_ntoa(destiny_addr.sin_addr)) + ":" + to_string(ntohs(destiny_addr.sin_port)) + ", with header: " + packet.head()
     #define CACHE_SIZE 10
+
+    const char MAIN_IP[] = "148.113.182.29";
 #endif
