@@ -1,6 +1,6 @@
 # Final_project_redes_ucsp
 
-## TODO
+## TO DO
 - probar todo hasta ahora (debugeo)
 - cambiar doc
 - read requests
